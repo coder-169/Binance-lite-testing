@@ -1,4 +1,6 @@
-export const changePassword = async (req, res) => {
+import User from "@/app/models/User"
+
+export async function PUT(req, res) {
     try {
         const user = await User.findById(req.user)
         if (!user)

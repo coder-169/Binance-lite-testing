@@ -1,33 +1,49 @@
-async (req, res) => {
+import mongoose from "mongoose"
+import { headers } from "next/headers"
+import { NextResponse } from "next/server"
+import dbConnect from "@/app/helpers/db"
+import bcryptjs from "bcryptjs"
+import { generateCode, sendEmail } from "@/app/helpers/functions"
+import User from "@/app/models/User"
 
-    console.log(req.body)
+export async function POST(req, res) {
+
     try {
-        let user = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }, { phone: req.body.phone }] })
-        if (user?.isVerified) {
-            return res.status(400).json({ success: false, message: 'try different credentials' })
-        }
+        await dbConnect()
+        let body = await req.json();
+        let user = await User.findOne({ $or: [{ email: body.email }, { username: body.username }, { phone: body.phone }] })
         let code = generateCode()
-        const { username, email, phone, password } = req.body
+        const { username, email, phone, password, apiKey, secretKey } = body
+        if (user)
+            return NextResponse.json({ success: false, message: `try different Details` }, {
+                status: 400
+            })
+
         if (!user) {
             const hashedPass = await bcryptjs.hash(password, 10)
-            user = await User.create({ username, email, phone, password: hashedPass })
+            user = await User.create({ username, email, phone, password: hashedPass, api: apiKey, secret: secretKey })
         }
         const mailOptions = {
             from: process.env.EMAIL,
-            to: req.body.email,
+            to: body.email,
             subject: `Account Verification Code`,
             text: `Hi ${user.username}, \n\n Your account is created you have to verify by entering this ${code} code (it will expire in 10 minutes) and then you can login with your credentials`,
         };
 
         await sendEmail(req, res, mailOptions);
-        return res.json({ success: true, code, message: `We've sent you an email, please verify your account.` })
+        return NextResponse.json({ success: true, code, message: `We've sent you an email, please verify your account.` }, {
+            status: 200
+        })
     } catch (error) {
-        return res.json({ success: false, message: error.message })
+        console.log(error)
+        return NextResponse.json({ success: false, message: error.message }, {
+            status: 500
+        })
     }
 }
 
 // GEt
-export const resendCode =  async (req, res) => {
+export const resendCode = async (req, res) => {
     try {
         // const { email } = req. // from req.headers
         if (!email)

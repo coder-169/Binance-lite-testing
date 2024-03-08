@@ -1,16 +1,32 @@
-async (req, res) => {
-    const { loginId, password } = req.body
+import User from "@/app/models/User"
+import { NextResponse } from "next/server"
+import bcryptjs from "bcryptjs"
+import jwt from "jsonwebtoken"
+import dbConnect from "@/app/helpers/db"
+export async function POST(req, res) {
     try {
+        let body = await req.json()
+        await dbConnect()
+        const { loginId, password } = body
         const user = await User.findOne({ $or: [{ email: loginId }, { username: loginId }] })
         if (!user)
-            return res.status(404).json({ success: false, message: "invalid credentials" })
+        return NextResponse.json(
+                { success: false, message: "invalid credentials" }, {
+                status: 404
+            })
 
         const match = await bcryptjs.compare(password, user.password)
         if (!match)
-            return res.status(400).json({ success: false, message: "invalid credentials" })
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15d' })
-        res.cookie('token', token, options).json({ success: true, message: "login successful", user, token })
+            return NextResponse.json({ success: false, message: "invalid credentials" }, {
+                status: 404
+            })
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '10d' })
+        return NextResponse.json({ success: true, message: "login successful", user, token }, {
+            status: 200
+        })
     } catch (error) {
-        return res.json({ success: false, message: error.message })
+        return NextResponse.json({ success: false, message: error.message }, {
+            status: 500
+        })
     }
 }

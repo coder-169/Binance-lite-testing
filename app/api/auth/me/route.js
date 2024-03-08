@@ -1,11 +1,19 @@
-export const me = async (req, res) => {
+import dbConnect from "@/app/helpers/db"
+import { isAuthenticated } from "@/app/helpers/functions"
+import User from "@/app/models/User"
+import jwt from "jsonwebtoken"
+import { headers } from "next/headers"
+import { NextResponse } from "next/server"
+
+export async function GET(req, res) {
     try {
-        const data = jwt.verify(req.header('token'), process.env.JWT_SECRET)
-        const user = await User.findById(data.id).select('-password')
+        await isAuthenticated(req, res)
+        await dbConnect()
+        const user = await User.findById(req.user).select('-password')
         if (!user)
-            return res.status(400).json({ success: false, message: "user not found" })
-        return res.json({ success: true, message: "user found successfully", user })
+            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+        return NextResponse.json({ success: true, message: "user found successfully", user }, { status: 200 })
     } catch (error) {
-        return res.json({ success: false, message: error.message })
+        return NextResponse.json({ success: false, message: error.message }, { status: 500 })
     }
 }

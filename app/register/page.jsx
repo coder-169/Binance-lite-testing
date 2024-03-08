@@ -7,7 +7,8 @@ import bcryptjs from "bcryptjs";
 import { toast } from "react-toastify";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Button, TextField } from "@mui/material";
+import { Button, FormControl, TextField } from "@mui/material";
+import Image from "next/image";
 
 const Page = () => {
   const [user, setUser] = useState({
@@ -23,7 +24,9 @@ const Page = () => {
   const router = useRouter();
   // Check if the verification code has expired
   function isVerificationCodeExpired() {
-    const expirationTime = localStorage.getItem("ecmo-verify-code-expiry");
+    const expirationTime = localStorage.getItem(
+      "binance-lite-verify-code-expiry"
+    );
     if (!expirationTime) return true; // If there's no expiration time, consider it expired
     return new Date().getTime() > parseInt(expirationTime, 10);
   }
@@ -33,43 +36,45 @@ const Page = () => {
     const expirationTime = new Date().getTime() + 10 * 60 * 1000; // 10 minutes in milliseconds
     const hashedCode = await bcryptjs.hash(code.toString(), 10);
 
-    localStorage.setItem("ecmo-verify-code", JSON.stringify(hashedCode));
+    localStorage.setItem(
+      "binance-lite-verify-code",
+      JSON.stringify(hashedCode)
+    );
 
-    localStorage.setItem("ecmo-verify-code-expiry", expirationTime.toString());
+    localStorage.setItem(
+      "binance-lite-verify-code-expiry",
+      expirationTime.toString()
+    );
   };
   const [signUp, setSignUp] = useState(false);
   const handleSingUp = async (e) => {
     e.preventDefault();
     if (
       user.email === "" ||
-      user.firstName === "" ||
-      user.lastName === "" ||
+      user.username === "" ||
+      user.confirmPassword === "" ||
       user.phone === "" ||
-      user.password === "" ||
-      user.countryCode === ""
+      user.password === ""
     ) {
       return toast.error("Please fill all the fields");
     }
-
+    if (user.password !== user.confirmPassword)
+      return toast.error("Passwords do not match");
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(user),
-        }
-      );
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
       const data = await response.json();
       if (data.success) {
-        localStorage.setItem("ecmo-email", user.email);
+        localStorage.setItem("binance-lite-email", user.email);
         storeCode(data.code);
         setSignUp(true);
         setVerificationCode("");
-        // router.push("/login");
         toast.success(data.message);
       } else {
         toast.error(data.message);
@@ -89,15 +94,15 @@ const Page = () => {
       toast.error("enter code to verify");
       return;
     }
-    let storedCode = localStorage.getItem("ecmo-verify-code");
+    let storedCode = localStorage.getItem("binance-lite-verify-code");
     // No code to verify
     if (!storedCode) {
       toast.error("try to register again");
     }
     if (isVerificationCodeExpired()) {
       toast.error("code has expired! register again");
-      localStorage.removeItem("ecmo-verify-code");
-      localStorage.removeItem("ecmo-verify-code-expiry");
+      localStorage.removeItem("binance-lite-verify-code");
+      localStorage.removeItem("binance-lite-verify-code-expiry");
       return;
     } // Code has expired
     else {
@@ -105,27 +110,27 @@ const Page = () => {
       console.log(verificationCode, storedCode);
       let check = await bcryptjs.compare(verificationCode, storedCode);
       if (check) {
-        setVerified(true);
-        setVerificationCode("");
-        localStorage.removeItem("ecmo-verify-code");
-        localStorage.removeItem("ecmo-verify-code-expiry");
-        const res = await fetch("http://localhost:5000/api/v1/auth/verify", {
+        const res = await fetch("/api/auth/verify", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: localStorage.getItem("ecmo-email") || user.email,
+            email: localStorage.getItem("binance-lite-email") || user.email,
           }),
         });
         const data = await res.json();
         if (data.success) {
+          setVerified(true);
+          setVerificationCode("");
+          localStorage.removeItem("binance-lite-verify-code");
+          localStorage.removeItem("binance-lite-verify-code-expiry");
           toast.success(data.message);
           router.push("/login");
         } else {
           toast.error(data.message);
         }
-        localStorage.removeItem("ecmo-email");
+        localStorage.removeItem("binance-lite-email");
       } else {
         toast.error("code is incorrect");
       }
@@ -135,16 +140,16 @@ const Page = () => {
     try {
       console.log(
         JSON.stringify({
-          email: localStorage.getItem("ecmo-email"),
+          email: localStorage.getItem("binance-lite-email"),
         })
       );
-      const response = await fetch("http://localhost:5000/api/v1/auth/resend", {
+      const response = await fetch("/api/auth/resend", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: localStorage.getItem("ecmo-email"),
+          email: localStorage.getItem("binance-lite-email"),
         }),
       });
       const data = await response.json();
@@ -162,22 +167,22 @@ const Page = () => {
   };
   const reEnterEmail = async () => {
     setSignUp(false);
-    localStorage.removeItem("ecmo-verify-code");
-    localStorage.removeItem("ecmo-email");
-    localStorage.removeItem("ecmo-verify-code-expiry");
+    localStorage.removeItem("binance-lite-verify-code");
+    localStorage.removeItem("binance-lite-email");
+    localStorage.removeItem("binance-lite-verify-code-expiry");
   };
   const [passType, setPassType] = useState("password");
   useEffect(() => {
     if (localStorage.getItem("auth-token")) {
       router.push("/");
     }
-    if (localStorage.getItem("ecmo-email")) {
+    if (localStorage.getItem("binance-lite-email")) {
       setSignUp(true);
       if (isVerificationCodeExpired()) {
         setSignUp(false);
-        localStorage.removeItem("ecmo-verify-code");
-        localStorage.removeItem("ecmo-email");
-        localStorage.removeItem("ecmo-verify-code-expiry");
+        localStorage.removeItem("binance-lite-verify-code");
+        localStorage.removeItem("binance-lite-email");
+        localStorage.removeItem("binance-lite-verify-code-expiry");
       }
     }
   }, [router]);
@@ -185,7 +190,7 @@ const Page = () => {
     <div className="w-full relative flex items-center h-[100vh] justify-center mx-auto">
       <button className=" text-white absolute left-2 top-4">
         <Link href={"/"}>
-          <img src="/logo_main.jpeg" width={100} className="mx-auto" alt="" />
+          <Image src="/logo_main.jpeg" width={100} height={100} className="mx-auto" alt="" />
         </Link>
       </button>
       <div className="flex w-2/5 flex-col justify-start">
@@ -203,6 +208,7 @@ const Page = () => {
                   value={user.email}
                   id={"email"}
                   label={"Email"}
+                  name="email"
                   onChange={onChange}
                   type={"email"}
                   className="w-full"
@@ -216,6 +222,7 @@ const Page = () => {
                   onChange={onChange}
                   type={"text"}
                   className="w-1/2"
+                  name="username"
                 />
                 <TextField
                   value={user.phone}
@@ -224,18 +231,18 @@ const Page = () => {
                   onChange={onChange}
                   type={"tel"}
                   className="w-1/2"
-
+                  name="phone"
                 />
               </div>
               <div className="my-4 relative">
                 <TextField
                   value={user.password}
+                  name="password"
                   id={"password"}
                   label={"Password"}
                   onChange={onChange}
                   type={passType}
                   className="w-full"
-
                 />{" "}
                 {user.password.length > 0 && (
                   <button type="button" className="absolute right-3 top-5">
@@ -257,11 +264,11 @@ const Page = () => {
                 <TextField
                   value={user.confirmPassword}
                   id={"confirmPassword"}
+                  name="confirmPassword"
                   label={"Confirm Password"}
                   onChange={onChange}
                   type={passType}
                   className="w-full"
-
                 />
                 {user.password.length > 0 && (
                   <button type="button" className="absolute right-3 top-5">
@@ -321,15 +328,21 @@ const Page = () => {
           ) : (
             <form onSubmit={verifyCode} className="w-full h-max py-2  mx-auto">
               <div className="my-4">
-                <TextField
-                  value={verificationCode}
-                  id={"verificationCode"}
-                  label={"Enter Six digit Code"}
-                  onChange={(e) => setVerificationCode(e.target.value)}
-                  type={"text"}
-                />
+                <FormControl fullWidth>
+                  <TextField
+                    value={verificationCode}
+                    id={"verificationCode"}
+                    label={"Enter Six digit Code"}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    type={"text"}
+                  />
+                </FormControl>
               </div>
-              <Button type={"submit"} className="my-4" variant="contained">
+              <Button
+                type={"submit"}
+                className="text-white mt-8 mx-auto block outline-white border-white bg-blue-500 hover:bg-blue-500 py-2 px-4"
+                variant="contained"
+              >
                 VERIFY
               </Button>
               {verified ? (

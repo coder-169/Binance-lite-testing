@@ -10,33 +10,38 @@ import { useRouter } from "next/navigation";
 import { Button, TextField } from "@mui/material";
 import Link from "next/link";
 import Loader from "../components/Loader";
+import { useGlobalContext } from "../Context";
+import Image from "next/image";
 
 const Page = () => {
-  const [user, setUser] = useState({ loginId: "", password: "" });
+  const [userData, setUserData] = useState({ loginId: "", password: "" });
   const [loading, setLoading] = useState(false);
   // const dispatch = useDispatch();
+  const { setUser, user, setIsAuthenticated } = useGlobalContext();
   const router = useRouter();
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (user.loginId === "" || user.password === "") {
+    if (userData.loginId === "" || userData.password === "") {
       toast.error("please fill all the fields");
       return;
     }
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(user),
+        body: JSON.stringify(userData),
       });
       const data = await response.json();
       if (data.success) {
         localStorage.setItem("auth-token", data.token);
+        setUser(data.user);
+        setIsAuthenticated(true);
         router.push("/");
-        dispatch(userActor(data.user));
+        setUserData({ loginId: "", password: "" });
         toast.success(data.message);
       } else {
         toast.error(data.message);
@@ -49,19 +54,20 @@ const Page = () => {
   };
   const [passType, setPassType] = useState("password");
   const onChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setUserData({ ...userData, [e.target.name]: e.target.value });
   };
   useEffect(() => {
-    if (localStorage.getItem("auth-token")) {
+    if (Object.keys(user).length > 0 && localStorage.getItem("auth-token")) {
       router.push("/");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   return (
     <div className="w-full relative flex items-center justify-center h-[100vh]">
       <div className=" text-white absolute left-2 top-4">
         <Link href={"/"}>
-          <img src="/next.svg" width={100} className="mx-auto" alt="" />
+          <Image src="/next.svg" width={100} height={100} className="mx-auto" alt="" />
         </Link>
       </div>
       <div className="flex flex-col justify-center w-1/4">
@@ -75,7 +81,7 @@ const Page = () => {
             <div className="my-4">
               <TextField
                 className="w-full text-white  "
-                value={user.loginId}
+                value={userData.loginId}
                 name={"loginId"}
                 label={"Email or Username"}
                 onChange={onChange}
@@ -85,13 +91,13 @@ const Page = () => {
             <div className="my-4 relative">
               <TextField
                 className="w-full"
-                value={user.password}
+                value={userData.password}
                 name={"password"}
                 label={"Password"}
                 onChange={onChange}
                 type={passType}
               />
-              {user.password.length > 0 && (
+              {userData.password.length > 0 && (
                 <button type="button" className="absolute right-3 top-5">
                   {passType === "text" ? (
                     <RemoveRedEyeSharp

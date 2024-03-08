@@ -1,14 +1,19 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import CurrencyBitcoinRoundedIcon from "@mui/icons-material/CurrencyBitcoinRounded";
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
-import { Button } from "@mui/material";
+import { useGlobalContext } from "../Context";
 const Sidebar = () => {
   const [menu, setMenu] = useState(true);
+  const { getUserInfo, logOutUser, isAuthenticated } = useGlobalContext();
+  useEffect(() => {
+    getUserInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className={`bg-white w-full relative h-full`}>
       <div className="!z-50 md:hidden absolute top-4 left-4">
@@ -50,15 +55,15 @@ const Sidebar = () => {
               <CurrencyBitcoinRoundedIcon /> Trade
             </Link>
           </li>
-          {localStorage.getItem("auth-token") ? (
+          {isAuthenticated ? (
             <li className="my-4">
-              <Button
-                className="flex px-8 transition-all duration-200 py-4 gap-4 hover:bg-gray-100"
-
+              <button
+                onClick={logOutUser}
+                className="w-full flex px-8 transition-all duration-200 py-4 gap-4 hover:bg-gray-100"
               >
                 {" "}
                 <ExitToAppRoundedIcon /> Logout
-              </Button>
+              </button>
             </li>
           ) : (
             <li className="my-4">

@@ -1,13 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-let bcryptjs = [];
-// import bcryptjs from "bcryptjs";
-import { Link, useRouter } from "next/navigation";
+import bcryptjs from "bcryptjs";
+import { useRouter } from "next/navigation";
 import { Button, TextField } from "@mui/material";
 import Loader from "../components/Loader";
-// import { toast } from "react-toastify";
-const toast = [""];
-
+import Image from "next/image";
+import { toast } from "react-toastify";
+import Link from "next/link";
 const Page = () => {
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
@@ -16,7 +15,7 @@ const Page = () => {
   const [verified, setVerified] = useState(false);
   const [confirmPass, setConfirmPass] = useState("");
   const [newPass, setNewPass] = useState("");
-
+  const router = useRouter();
   const getResetLink = async (e) => {
     e?.preventDefault();
     setLoading(true);
@@ -140,7 +139,6 @@ const Page = () => {
       }
     }
   };
-  const router = useRouter();
   useEffect(() => {
     if (localStorage.getItem("ecmo-forgot-code")) {
       if (!isVerificationCodeExpired()) {
@@ -154,7 +152,13 @@ const Page = () => {
     <div className="w-full relative flex items-center justify-center bg-gray-900 mx-auto h-[100vh]">
       <div className=" text-white absolute left-2 top-4">
         <Link href={"/"}>
-          <img src="/logo_main.jpeg" width={100} className="mx-auto" alt="" />
+          <Image
+            src="/logo_main.jpeg"
+            width={100}
+            height={100}
+            className="mx-auto"
+            alt=""
+          />
         </Link>
       </div>{" "}
       <div className="w-1/4 flex flex-col justify-center h-5/6">
