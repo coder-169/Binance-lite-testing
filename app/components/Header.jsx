@@ -1,12 +1,18 @@
 import { Button } from "@mui/material";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useGlobalContext } from "../Context";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import CurrencyBitcoinRoundedIcon from "@mui/icons-material/CurrencyBitcoinRounded";
+import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 
 const Header = () => {
   const { logOutUser, user, isAuthenticated, loading, getUserInfo } =
     useGlobalContext();
+  const [menu, setMenu] = useState(false);
   useEffect(() => {
     if ((Object.keys(user).length === 0 && !loading) || !user) {
       getUserInfo();
@@ -14,42 +20,72 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <header className="py-4 flex justify-between ">
-      <h3 className="text-2xl font-medium">Logo</h3>
-      <ul className="flex gap-8">
-        <li>
-          <Link href={"/"}>Home</Link>
-        </li>
-        <li>
-          <Link href={"/wallet"}>Wallet</Link>
-        </li>
-        <li>
-          <Link href={"/contact"}>Contact us</Link>
-        </li>
-      </ul>
-      <div className="">
-        {isAuthenticated ? (
-          <Button
-            onClick={logOutUser}
-            variant="contained"
-            size="small"
-            className="bg-red-500 transition-all duration-200 hover:bg-red-600"
-            color="error"
-          >
-            Logout
-          </Button>
+    <>
+      <div className="!z-50 md:hidden absolute top-4 left-4">
+        {!menu ? (
+          <button onClick={() => setMenu(true)}>
+            <MenuRoundedIcon />{" "}
+          </button>
         ) : (
-          <Button
-            variant="contained"
-            size="small"
-            className="bg-green-500 transition-all duration-200 hover:bg-green-600"
-            color="error"
-          >
-            <Link href={"/login"}>Login</Link>
-          </Button>
+          <button onClick={() => setMenu(false)}>
+            {" "}
+            <HighlightOffRoundedIcon />
+          </button>
         )}
       </div>
-    </header>
+      {/* <div className={`w-full relative h-full`}> */}
+      <div
+        className={`${
+          menu ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 -translate-x-full w-72 z-49 transition-all duration-300 bg-white relative h-full flex justify-center flex-col items-center`}
+      >
+        <Link href={"/"} className="mb-12">
+          <h3 className="text-3xl font-medium">Binance Lite</h3>
+        </Link>
+        <ul className="w-full">
+          <li className="my-4">
+            <Link
+              className="flex px-8 transition-all duration-200 py-4 gap-4 hover:bg-gray-100"
+              href="/"
+            >
+              {" "}
+              <HomeRoundedIcon /> Home
+            </Link>
+          </li>
+          <li className="my-4">
+            <Link
+              className="flex px-8 transition-all duration-200 py-4 gap-4 hover:bg-gray-100"
+              href="/wallet"
+            >
+              {" "}
+              <CurrencyBitcoinRoundedIcon /> Wallet
+            </Link>
+          </li>
+          {isAuthenticated ? (
+            <li className="my-4">
+              <button
+                onClick={logOutUser}
+                className="w-full flex px-8 transition-all duration-200 py-4 gap-4 hover:bg-gray-100"
+              >
+                {" "}
+                <ExitToAppRoundedIcon /> Logout
+              </button>
+            </li>
+          ) : (
+            <li className="my-4">
+              <Link
+                className="flex px-8 transition-all duration-200 py-4 gap-4 hover:bg-gray-100"
+                href="/login"
+              >
+                {" "}
+                <ExitToAppRoundedIcon /> Login
+              </Link>
+            </li>
+          )}
+        </ul>
+        {/* </div> */}
+      </div>
+    </>
   );
 };
 

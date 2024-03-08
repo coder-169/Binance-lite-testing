@@ -127,3 +127,8 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 0;
   display: none;
 }
+.wallet::-webkit-scrollbar{
+  width: 0;
+  display: none;
+
+}

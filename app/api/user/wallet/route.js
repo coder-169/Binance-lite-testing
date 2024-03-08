@@ -20,6 +20,7 @@ export async function GET(req, res, next) {
         if (!user.isSubscribed)
             return NextResponse.json({ success: false, message: "sorry you are not subscribed" }, { status: 400 })
     
+    //    const client = new Spot(user.api, user.secret)
        const client = new Spot(user.api, user.secret, { baseURL: "https://testnet.binance.vision" })
    
         // const client = new Spot(process.env.ORIG_WALLET_API_KEY, process.env.ORIG_WALLET_SECRET_KEY)

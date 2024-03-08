@@ -17,7 +17,7 @@ const Page = () => {
   const { getUserInfo, isAuthenticated, loading, setLoading, user, setUser } =
     useGlobalContext();
   const router = useRouter();
-  const [wallet, setWallet] = useState([]);
+  const [wallet, setWallet] = useState([{asset:'BTC',free:'2.00',locked:'1.20'}]);
   const getUserWallet = async () => {
     if (!localStorage.getItem("auth-token")) return;
     console.log(user);
@@ -76,9 +76,9 @@ const Page = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className="w-full mx-auto mt-12">
-          <div className="mt-8">
-            {user?.isSubscribed ? (
+        <div className="w-full wallet mx-auto mt-12">
+          <div className="mt-8 mx-24">
+            {!user?.isSubscribed ? (
               <div>
                 <h1 className="text-2xl font-medium">Your Wallet</h1>
                 <div className="mt-4 h-[60vh] overflow-y-scroll">
@@ -93,14 +93,15 @@ const Page = () => {
                     );
                   })}
                 </div>
-                <div className="w-1/2 text-center mx-auto">
+                <div className="w-1/2 ml-auto -z-40 text-right">
                   <Button
                     onClick={handleUnSubscribe}
-                    className="text-white outline-white border-white rounded-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 py-2 px-4"
+                    className="text-white mt-4 outline-white border-white rounded-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 py-2 px-4 mx-right text-sm"
                     variant="outlined"
+                    size="small"
                   >
                     <SmartToyRoundedIcon />
-                    Cancel Auto Trade
+                    Unsubscribe
                   </Button>
                 </div>
               </div>

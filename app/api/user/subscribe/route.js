@@ -15,7 +15,8 @@ export async function POST(req, res) {
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
 
-        const client = new Spot(body.apiKey, body.secretKey, { baseURL: "https://testnet.binance.vision" })
+        // const client = new Spot(body.apiKey, body.secretKey, { baseURL: "https://testnet.binance.vision" })
+        const client = new Spot(body.apiKey, body.secretKey)
 
         const response = await client.account()
 

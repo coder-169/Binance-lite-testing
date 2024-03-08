@@ -5,7 +5,7 @@ import { headers } from "next/headers"
 import jwt from "jsonwebtoken"
 import nodemailer from "nodemailer"
 
-export const generateCode = () => {
+export const generateCode = async () => {
     let code = (Math.floor(100000 + Math.random() * 900000)).toString();
     return code;
 }
@@ -66,7 +66,6 @@ export const makeOptions = async ({ quantity, symbol, limit, type, quoteOrderQty
 }
 
 export const isAuthenticated = async (req, res) => {
-
     try {
         const headerList = headers()
         const token = headerList.get('token')

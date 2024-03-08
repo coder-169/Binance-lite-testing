@@ -70,7 +70,7 @@ const Page = () => {
           <Image src="/next.svg" width={100} height={100} className="mx-auto" alt="" />
         </Link>
       </div>
-      <div className="flex flex-col justify-center w-1/4">
+      <div className="flex flex-col justify-center w-3/4 sm:w-3/5 md:1/2 lg:w-2/5 ">
         <h3 className="text-2xl text-center font-medium text-gray-700 mt-12 mb-4">
           Login
         </h3>

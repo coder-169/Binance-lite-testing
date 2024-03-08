@@ -190,10 +190,10 @@ const Page = () => {
     <div className="w-full relative flex items-center h-[100vh] justify-center mx-auto">
       <button className=" text-white absolute left-2 top-4">
         <Link href={"/"}>
-          <Image src="/logo_main.jpeg" width={100} height={100} className="mx-auto" alt="" />
+          <Image src="/next.svg" width={100} height={100} className="mx-auto" alt="" />
         </Link>
       </button>
-      <div className="flex w-2/5 flex-col justify-start">
+      <div className="flex w-4/5 sm:w-4/5 md:w-4/6 lg:w-2/5 flex-col justify-start">
         {" "}
         <h3 className="text-2xl text-center font-medium text-gray-700 mt-12 mb-4">
           Sign up for free
@@ -212,17 +212,21 @@ const Page = () => {
                   onChange={onChange}
                   type={"email"}
                   className="w-full"
+                  autoComplete="off"
+
                 />
               </div>
-              <div className="my-4 flex gap-2">
+              <div className="my-4 flex flex-col sm:flex-row gap-2">
                 <TextField
                   value={user.username}
                   id={"username"}
                   label={"User Name"}
                   onChange={onChange}
                   type={"text"}
-                  className="w-1/2"
+                  className="w-full sm:w-1/2"
                   name="username"
+                  autoComplete="off"
+
                 />
                 <TextField
                   value={user.phone}
@@ -230,8 +234,9 @@ const Page = () => {
                   label={"Phone"}
                   onChange={onChange}
                   type={"tel"}
-                  className="w-1/2"
+                  className="w-full sm:w-1/2"
                   name="phone"
+                  autoComplete="off"
                 />
               </div>
               <div className="my-4 relative">
@@ -240,6 +245,7 @@ const Page = () => {
                   name="password"
                   id={"password"}
                   label={"Password"}
+                  autoComplete="off"
                   onChange={onChange}
                   type={passType}
                   className="w-full"
@@ -267,6 +273,7 @@ const Page = () => {
                   name="confirmPassword"
                   label={"Confirm Password"}
                   onChange={onChange}
+                  autoComplete="off"
                   type={passType}
                   className="w-full"
                 />

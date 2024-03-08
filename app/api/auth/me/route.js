@@ -9,9 +9,10 @@ export async function GET(req, res) {
     try {
         await isAuthenticated(req, res)
         await dbConnect()
+        console.log(req.user)
         const user = await User.findById(req.user).select('-password')
         if (!user)
-            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+            return NextResponse.json({ success: false, message: "user not found",user:req.user }, { status: 404 })
         return NextResponse.json({ success: true, message: "user found successfully", user }, { status: 200 })
     } catch (error) {
         return NextResponse.json({ success: false, message: error.message }, { status: 500 })
