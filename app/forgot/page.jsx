@@ -7,6 +7,7 @@ import Loader from "../components/Loader";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import Link from "next/link";
+
 const Page = () => {
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
