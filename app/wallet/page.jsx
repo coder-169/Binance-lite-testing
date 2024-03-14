@@ -1,7 +1,16 @@
 "use client";
+import * as React from "react";
+import PropTypes from "prop-types";
+import SwipeableViews from "react-swipeable-views";
+import { useTheme } from "@mui/material/styles";
+import AppBar from "@mui/material/AppBar";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import UserLayout from "@/app/layouts/UserLayout";
 import { Button } from "@mui/material";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
-import Loader from "../components/Loader";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -9,15 +18,57 @@ import { useRouter } from "next/navigation";
 import CoinData from "../components/CoinData";
 import AdminLayout from "../layouts/AdminLayout";
 import axios from "axios";
-import UserLayout from "../layouts/UserLayout";
 import { useGlobalContext } from "../Context";
-const BASE_API_URL = "https://api1.binance.com";
+import Loader from "@/app/components/Loader";
 
-const Page = () => {
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    "aria-controls": `full-width-tabpanel-${index}`,
+  };
+}
+
+export default function FullWidthTabs() {
+  const theme = useTheme();
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const handleChangeIndex = (index) => {
+    setValue(index);
+  };
   const { getUserInfo, isAuthenticated, loading, setLoading, user, setUser } =
     useGlobalContext();
   const router = useRouter();
-  const [wallet, setWallet] = useState([{asset:'BTC',free:'2.00',locked:'1.20'}]);
+  const [wallet, setWallet] = useState([]);
   const getUserWallet = async () => {
     if (!localStorage.getItem("auth-token")) return;
     console.log(user);
@@ -54,7 +105,6 @@ const Page = () => {
       const data = await response.json();
       if (data.success) {
         setUser(data.user);
-        router.push("/");
         toast.success(data.message);
       } else {
         toast.error(data.message);
@@ -69,61 +119,145 @@ const Page = () => {
   useEffect(() => {
     getUserInfo();
     getUserWallet();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <UserLayout>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="w-full wallet mx-auto mt-12">
-          <div className="mt-8 mx-24">
-            {!user?.isSubscribed ? (
-              <div>
-                <h1 className="text-2xl font-medium">Your Wallet</h1>
-                <div className="mt-4 h-[60vh] overflow-y-scroll">
-                  {wallet?.map((coin, idx) => {
-                    return (
-                      <CoinData
-                        key={coin.asset + idx}
-                        symbol={coin.asset}
-                        amount={parseFloat(coin.free).toFixed(3)}
-                        inOrder={parseFloat(coin.locked).toFixed(3)}
-                      />
-                    );
-                  })}
+      <div className="w-full text-center mx-auto">
+        <Box
+          sx={{
+            bgcolor: "background.paper",
+            width: "85%",
+            height: "85vh",
+            margin: "3rem auto",
+            overflowY: "scroll",
+          }}
+        >
+          <AppBar position="static" className="sticky top-0 z-50">
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              indicatorColor="secondary"
+              textColor="inherit"
+              variant="fullWidth"
+              aria-label="full width tabs example"
+            >
+              <Tab label="FUTURE WALLET" {...a11yProps(0)} />
+              <Tab label="SPOT WALLET" {...a11yProps(1)} />
+            </Tabs>
+          </AppBar>
+          <SwipeableViews
+            axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+            index={value}
+            onChangeIndex={handleChangeIndex}
+          >
+            <div value={value} index={0} dir={theme.direction}>
+              {loading ? (
+                <Loader />
+              ) : (
+                <div className="w-full wallet mx-auto">
+                  <div className="mt-8 mx-8">
+                    {user?.isSubscribed ? (
+                      <div>
+                        <h1 className="text-2xl font-medium">Your Wallet</h1>
+                        <div className="mt-4 grid gap-4 p-4 grid-cols-12">
+                          {wallet?.map((coin, idx) => {
+                            return (
+                              <CoinData
+                                key={coin.asset + idx}
+                                symbol={coin.asset}
+                                amount={parseFloat(coin.free).toFixed(3)}
+                                inOrder={parseFloat(coin.locked).toFixed(3)}
+                              />
+                            );
+                          })}
+                        </div>
+                        <div className="w-1/2 ml-auto -z-40 text-right">
+                          <Button
+                            onClick={handleUnSubscribe}
+                            className="text-white my-4 outline-white border-white rounded-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 py-2 px-4 mx-right text-sm"
+                            variant="outlined"
+                            size="small"
+                          >
+                            <SmartToyRoundedIcon />
+                            Unsubscribe
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full h-[50vh] flex justify-center items-center">
+                        <div className="w-1/2 text-center">
+                          <Link
+                            href={"/trade/join"}
+                            className="text-white outline-white border-white rounded-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 py-2 px-4"
+                            variant="outlined"
+                          >
+                            <SmartToyRoundedIcon />
+                            Join Auto Trade
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="w-1/2 ml-auto -z-40 text-right">
-                  <Button
-                    onClick={handleUnSubscribe}
-                    className="text-white mt-4 outline-white border-white rounded-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 py-2 px-4 mx-right text-sm"
-                    variant="outlined"
-                    size="small"
-                  >
-                    <SmartToyRoundedIcon />
-                    Unsubscribe
-                  </Button>
-                </div>
+              )}
+            </div>
+            <div>
+              <div value={value} index={1} dir={theme.direction}>
+                {loading ? (
+                  <Loader />
+                ) : (
+                  <div className="w-full wallet mx-auto">
+                    <div className=" mx-8">
+                      {user?.isSubscribed ? (
+                        <div>
+                          <h1 className="text-2xl font-medium">Your Wallet</h1>
+                          <div className="mt-4 grid gap-4 p-4 grid-cols-12">
+                            {wallet?.map((coin, idx) => {
+                              return (
+                                <CoinData
+                                  key={coin.asset + idx}
+                                  symbol={coin.asset}
+                                  amount={parseFloat(coin.free).toFixed(3)}
+                                  inOrder={parseFloat(coin.locked).toFixed(3)}
+                                />
+                              );
+                            })}
+                          </div>
+                          <div className="w-1/2 ml-auto -z-40 text-right">
+                            <Button
+                              onClick={handleUnSubscribe}
+                              className="text-white my-4 outline-white border-white rounded-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 py-2 px-4 mx-right text-sm"
+                              variant="outlined"
+                              size="small"
+                            >
+                              <SmartToyRoundedIcon />
+                              Unsubscribe
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-full h-[50vh] flex justify-center items-center">
+                          <div className="w-1/2 text-center">
+                            <Link
+                              href={"/trade/join"}
+                              className="text-white outline-white border-white rounded-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 py-2 px-4"
+                              variant="outlined"
+                            >
+                              <SmartToyRoundedIcon />
+                              Join Auto Trade
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="w-full h-[40vh] flex justify-center items-center">
-                <div className="w-1/2 text-center">
-                  <Link
-                    href={"/trade/join"}
-                    className="text-white outline-white border-white rounded-md bg-blue-400 hover:bg-blue-500 transition-all duration-200 py-2 px-4"
-                    variant="outlined"
-                  >
-                    <SmartToyRoundedIcon />
-                    Join Auto Trade
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+            </div>
+          </SwipeableViews>
+        </Box>
+      </div>
     </UserLayout>
   );
-};
-
-export default Page;
+}

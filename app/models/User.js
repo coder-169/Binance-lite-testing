@@ -20,18 +20,28 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    isSubscribed: {
-        type: Boolean,
-        default: false
-    },
-    api: {
-        type: String,
-        default: "",
-    },
-    secret: {
-        type: String,
-        default: "",
-    },
+
+    exchanges: [
+        {
+            name: {
+                type: String,
+            },
+            apiKey: {
+                type: String,
+
+            },
+            secretKey: {
+                type: String,
+
+            },
+            paraphrase: {
+                type: String,
+            },
+            isSubscribed: {
+                type: Boolean,
+            },
+        }
+    ],
     role: {
         type: String,
         default: "user",

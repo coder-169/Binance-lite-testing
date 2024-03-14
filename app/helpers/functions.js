@@ -4,7 +4,15 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers"
 import jwt from "jsonwebtoken"
 import nodemailer from "nodemailer"
+export const generateTimestamp = async (wind = 60000) => {
+    var recvWindow = wind; // Maximum value for recvWindow
+    var currentTimestamp = new Date().getTime();
 
+    // Ensure the timestamp is within the recvWindow range
+    var timestamp = Math.min(currentTimestamp, currentTimestamp + recvWindow);
+
+    return timestamp;
+}
 export const generateCode = async () => {
     let code = (Math.floor(100000 + Math.random() * 900000)).toString();
     return code;

@@ -9,7 +9,6 @@ export async function GET(req, res) {
     try {
         await isAuthenticated(req, res)
         await dbConnect()
-        console.log(req.user)
         const user = await User.findById(req.user).select('-password')
         if (!user)
             return NextResponse.json({ success: false, message: "user not found",user:req.user }, { status: 404 })

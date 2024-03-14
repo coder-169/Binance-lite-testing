@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import UserLayout from "../layouts/UserLayout";
+import UserLayout from "../../layouts/UserLayout";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import AdminLayout from "../layouts/AdminLayout";
+import AdminLayout from "../../layouts/AdminLayout";
 import {
   Button,
   FormControl,
@@ -12,13 +12,12 @@ import {
   Select,
 } from "@mui/material";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
-import { symbols } from "../components/Symbols";
-import { useGlobalContext } from "../Context";
-import Loader from "../components/Loader";
+import { useGlobalContext } from "../../Context";
+import Loader from "../../components/Loader";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { DataObject, TableRowsSharp } from "@mui/icons-material";
-import { makeOptions } from "../helpers/functions";
+import { makeOptions } from "../../helpers/functions";
 const BASE_API_URL = "https://api1.binance.com";
 
 const options = ["Option 1", "Option 2"];
@@ -32,6 +31,8 @@ const Page = () => {
     user: "",
     stopPrice: "",
     price: "",
+    callbackRate: "",
+    exchange: "",
   });
   const [users, setUsers] = useState([]);
   const handleChange = (e) => {
@@ -97,10 +98,16 @@ const Page = () => {
         return toast.error("please enter all fields");
       }
 
-      let stringiFied = JSON.stringify({ user, type, side, symbol, options });
-      let url = "/api/orders/order";
+      let stringiFied = JSON.stringify({
+        user,
+        type,
+        side,
+        symbol,
+        options,
+      });
+      console.log(stringiFied);
+      let url = "/api/binance/future/order";
 
-      console.log(typeof options.quantity);
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -109,6 +116,7 @@ const Page = () => {
         body: stringiFied,
       });
       const data = await response.json();
+      console.log(data);
       if (data.success) {
         toast.success(data.message);
         setOrder({
@@ -121,6 +129,7 @@ const Page = () => {
           user: "",
           stopPrice: "",
           price: "",
+          positionSide: "",
         });
       } else {
         toast.error(data.message);
@@ -145,12 +154,7 @@ const Page = () => {
       });
   };
   useEffect(() => {
-    // if (!user && !loading) {
-    //   getUserInfo();
-    //   console.log('calling again')
     getUsers();
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return loading ? (
     <Loader />
@@ -158,8 +162,8 @@ const Page = () => {
     <AdminLayout>
       {" "}
       <div className="w-4/5 mx-auto mt-12">
-        <h1 className="text-3xl font-medium">Spot Trade</h1>
-        {!loading && users.length === 0 ? (
+        <h1 className="text-3xl font-medium">Futures Trade</h1>
+        {users.length === 0 ? (
           <div className="h-[50vh] flex items-center justify-center">
             <h3 className="text-2xl text-gray-600 font-medium">
               No Subscribers to Start trade
@@ -167,30 +171,52 @@ const Page = () => {
           </div>
         ) : (
           <form onSubmit={dispatchOrder} className="mt-16 w-full">
-            <div className="flex w-full h-[50vh] gap-4 my-8">
-              <div className="w-1/2">
-                <div className="w-full mb-16">
+            <div className="flex sm:flex-row flex-col w-full h gap-4 my-8">
+              <div className="sm:w-1/2 w-full">
+                <div className="w-full mb-6 sm:mb-16">
                   <FormControl fullWidth>
-                    <InputLabel id="user">User *</InputLabel>
+                    <InputLabel id="exchangelabel">Exchange *</InputLabel>
                     <Select
-                      labelId="user"
-                      id="user"
-                      label="User"
-                      name="user"
-                      value={order.user}
+                      labelId="exchangelabel"
+                      id="exchange"
+                      label="Exchange"
+                      name="exchange"
+                      value={order.exchange}
                       onChange={handleChange}
                     >
-                      {users.map((user, idx) => {
+                      {exchanges.map((ex, idx) => {
                         return (
-                          <MenuItem key={user.username} value={user.username}>
-                            {user.username}
+                          <MenuItem key={ex} value={ex}>
+                            {ex}
                           </MenuItem>
                         );
                       })}
                     </Select>
                   </FormControl>
                 </div>
-                <div className="w-full">
+                <div className="mb-6 sm:mb-16">
+                  <FormControl fullWidth>
+                    <InputLabel id="side">Action *</InputLabel>
+                    <Select
+                      labelId="side"
+                      id="side"
+                      label="Action"
+                      name="side"
+                      value={order.side}
+                      onChange={handleChange}
+                    >
+                      {sides.map((side, idx) => {
+                        return (
+                          <MenuItem key={side} value={side}>
+                            {side === "BUY" ? side + "/LONG" : side + "/SHORT"}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
+
+                <div className="w-full mb-6 sm:mb-8">
                   <FormControl fullWidth>
                     <InputLabel id="symbol">Coin *</InputLabel>
                     <Select
@@ -211,7 +237,7 @@ const Page = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div className="w-full my-8">
+                <div className="w-full hidden sm:block mb-6 sm:my-8">
                   <TextField
                     disabled={order.symbol === "" ? true : false}
                     className="!text-white w-3/5 !border-white"
@@ -224,7 +250,7 @@ const Page = () => {
                     variant="outlined"
                   />
                 </div>
-                <div className="w-full my-8">
+                <div className="w-full hidden sm:block mb-6 sm:my-8">
                   <TextField
                     disabled={order.symbol === "" ? true : false}
                     className="!text-white w-3/5 !border-white"
@@ -242,27 +268,29 @@ const Page = () => {
                   />
                 </div>
               </div>
-              <div className="w-1/2">
-                <FormControl fullWidth>
-                  <InputLabel id="side">Action *</InputLabel>
-                  <Select
-                    labelId="side"
-                    id="side"
-                    label="Action"
-                    name="side"
-                    value={order.side}
-                    onChange={handleChange}
-                  >
-                    {sides.map((side, idx) => {
-                      return (
-                        <MenuItem key={side} value={side}>
-                          {side}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
-                <div className="mt-16 mb-8">
+              <div className="w-full sm:w-1/2">
+                <div className="w-full mb-6 sm:mb-16">
+                  <FormControl fullWidth>
+                    <InputLabel id="user">User *</InputLabel>
+                    <Select
+                      labelId="user"
+                      id="user"
+                      label="User"
+                      name="user"
+                      value={order.user}
+                      onChange={handleChange}
+                    >
+                      {users.map((user, idx) => {
+                        return (
+                          <MenuItem key={user.username} value={user.username}>
+                            {user.username}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="w-full mb-6 sm:mb-8">
                   <FormControl fullWidth>
                     <InputLabel id="type_id">Type *</InputLabel>
                     <Select
@@ -284,7 +312,7 @@ const Page = () => {
                   </FormControl>
                 </div>
                 {order.type === "MARKET" && (
-                  <div className="mb-8">
+                  <div className="w-full mb-6 sm:mb-8">
                     <FormControl fullWidth>
                       <TextField
                         disabled={true}
@@ -297,12 +325,8 @@ const Page = () => {
                     </FormControl>
                   </div>
                 )}
-                {(order.type === "STOP_LOSS" ||
-                  order.type === "TAKE_PROFIT" ||
-                  order.type === "STOP_LOSS_LIMIT" ||
-                  order.type === "LIMIT_MAKER" ||
-                  order.type === "TAKE_PROFIT_LIMIT") && (
-                  <div className="mb-8">
+                {(order.type === "STOP" || order.type === "STOP_MARKET") && (
+                  <div className="w-full mb-6 sm:mb-8">
                     <FormControl fullWidth>
                       <TextField
                         disabled={order.symbol === "" ? true : false}
@@ -319,9 +343,26 @@ const Page = () => {
                     </FormControl>
                   </div>
                 )}
-                {(order.type === "STOP_LOSS_LIMIT" ||
-                  order.type === "TAKE_PROFIT_LIMIT") && (
-                  <div className="mb-8">
+                {order.type === "TRAILING_STOP_MARKET" && (
+                  <div className="w-full mb-6 sm:mb-8">
+                    <FormControl fullWidth>
+                      <TextField
+                        disabled={order.symbol === "" ? true : false}
+                        className="!text-white text-center  !border-white"
+                        id="callbackRate"
+                        onChange={handleChange}
+                        name="callbackRate"
+                        label="CallBack Rate"
+                        variant="outlined"
+                        type="number"
+                        value={order.callbackRate}
+                        autoComplete="off"
+                      />
+                    </FormControl>
+                  </div>
+                )}
+                {(order.type === "LIMIT" || order.type === "STOP") && (
+                  <div className="w-full mb-6 sm:mb-8">
                     <FormControl fullWidth>
                       <TextField
                         disabled={order.symbol === "" ? true : false}
@@ -338,32 +379,45 @@ const Page = () => {
                     </FormControl>
                   </div>
                 )}
-                {order.type === "LIMIT" && (
-                  <div className="mb-8">
-                    <FormControl fullWidth>
-                      <TextField
-                        disabled={order.symbol === "" ? true : false}
-                        className="!text-white  !border-white"
-                        id="price"
-                        name="price"
-                        label="Limit(USDT)"
-                        value={order.price}
-                        onChange={handleChange}
-                        type="number"
-                        // color="white"
-                        autoComplete="off"
-                        variant="outlined"
-                      />
-                    </FormControl>
-                  </div>
-                )}
               </div>
             </div>
-            <div className="w-1/2">
+            <div className="sm:w-1/2 w-full flex gap-8">
+              <div className="w-1/2 block sm:hidden mb-6 sm:my-8">
+                <TextField
+                  disabled={order.symbol === "" ? true : false}
+                  className="!text-white w-full !border-white"
+                  id="quoteOrderQty"
+                  name="quoteOrderQty"
+                  label={`Amount(USDT)`}
+                  value={order.quoteOrderQty}
+                  onChange={specialHandler}
+                  // color="white"
+                  variant="outlined"
+                />
+              </div>
+              <div className="w-1/2 block sm:hidden mb-6 sm:my-8">
+                <TextField
+                  disabled={order.symbol === "" ? true : false}
+                  className="!text-white w-full !border-white"
+                  id="quantity"
+                  name="quantity"
+                  label={`Quantity(${
+                    order.symbol !== "" ? order.symbol : "Coin"
+                  })`}
+                  value={order.quantity}
+                  onChange={specialHandler}
+                  autoComplete="off"
+                  type="number"
+                  // color="white"
+                  variant="outlined"
+                />
+              </div>
+            </div>
+            <div className="w-full my-4 text-center">
               <Button
                 variant="contained"
                 type="submit"
-                className="tracking-wider bg-blue-400 hover:bg-blue-500 transition-all duration-200"
+                className="tracking-wider w-3/4 sm:w-1/2 md:w-1/4 mx-auto bg-blue-400 hover:bg-blue-500 transition-all duration-200"
                 size="large"
               >
                 Order
@@ -379,13 +433,11 @@ const Page = () => {
 const trades = [
   "MARKET",
   "LIMIT",
-  "STOP_LOSS",
-  "STOP_LOSS_LIMIT",
-  "TAKE_PROFIT",
-  "TAKE_PROFIT_LIMIT",
-  "LIMIT_MAKER",
+  "TRAILING_STOP_MARKET",
+  "STOP",
+  "STOP_MARKET",
 ];
-// const users = [{ username: "Saad2129" }, { username: "Javeria0224" }];
 const sides = ["BUY", "SELL"];
+const exchanges = ["Binance", "KuCoin", "ByBit", "Mexc"];
 
 export default Page;

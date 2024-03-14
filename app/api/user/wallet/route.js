@@ -15,14 +15,15 @@ export async function GET(req, res, next) {
         await isAuthenticated(req, res, next);
         await dbConnect()
         const user = await User.findById(req.user).select('-password')
+        console.log(req.user)
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
         if (!user.isSubscribed)
             return NextResponse.json({ success: false, message: "sorry you are not subscribed" }, { status: 400 })
-    
-    //    const client = new Spot(user.api, user.secret)
-       const client = new Spot(user.api, user.secret, { baseURL: "https://testnet.binance.vision" })
-   
+
+        // const client = new Spot(user.api, user.secret)
+        const client = new Spot(user.api, user.secret, { baseURL: "https://testnet.binance.vision" })
+
         // const client = new Spot(process.env.ORIG_WALLET_API_KEY, process.env.ORIG_WALLET_SECRET_KEY)
         const { data } = await client.account()
         const assets = data.balances.sort((a, b) => parseFloat(b.free) - parseFloat(a.free));

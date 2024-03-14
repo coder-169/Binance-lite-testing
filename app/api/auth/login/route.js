@@ -9,8 +9,13 @@ export async function POST(req, res) {
         await dbConnect()
         const { loginId, password } = body
         const user = await User.findOne({ $or: [{ email: loginId }, { username: loginId }] })
+        if (!user.isSubscribed)
+            return NextResponse.json(
+                { success: false, message: "you're account is not verified" }, {
+                status: 404
+            })
         if (!user)
-        return NextResponse.json(
+            return NextResponse.json(
                 { success: false, message: "invalid credentials" }, {
                 status: 404
             })

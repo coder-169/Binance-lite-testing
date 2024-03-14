@@ -8,20 +8,15 @@ import CurrencyBitcoinRoundedIcon from "@mui/icons-material/CurrencyBitcoinRound
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
-
+import WalletIcon from '@mui/icons-material/Wallet';
 const Header = () => {
   const { logOutUser, user, isAuthenticated, loading, getUserInfo } =
     useGlobalContext();
   const [menu, setMenu] = useState(false);
-  useEffect(() => {
-    if ((Object.keys(user).length === 0 && !loading) || !user) {
-      getUserInfo();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
   return (
     <>
-      <div className="!z-50 md:hidden absolute top-4 left-4">
+      <div className="!z-50 lg:hidden absolute top-4 left-4">
         {!menu ? (
           <button onClick={() => setMenu(true)}>
             <MenuRoundedIcon />{" "}

@@ -26,15 +26,17 @@ const AppProvider = ({ children }) => {
                 }
             );
             const data = await response.json();
-            console.log(data)
+      
             if (response.status === 404) {
                 localStorage.removeItem('auth-token')
                 router.push('/login')
+                setLoading(false)
                 return toast.error('session expired in login again')
             }
             if (data.message === 'jwt malformed' || data.message === 'jwt expired') {
                 localStorage.removeItem('auth-token')
                 router.push('/login')
+                setLoading(false)
                 return toast.error('session expired in login again')
             }
             if (data.success) {
@@ -57,18 +59,10 @@ const AppProvider = ({ children }) => {
         router.push('/login')
     };
     useEffect(() => {
-        // getUserInfo()
+        getUserInfo()
         // console.log(loading)
     }, [])
     // CRUD OPERATIONS for course @params id
-    const getApiUrl = () => {
-        const { hostname } = window.location;
-        if (hostname === "localhost" || hostname === "127.0.0.1") {
-            return "http://localhost:5000/";
-        } else {
-            return "https://api.digitalecmoacademy.com/";
-        }
-    };
     return (
         <AppContext.Provider
             value={{

@@ -127,8 +127,14 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 0;
   display: none;
 }
-.wallet::-webkit-scrollbar{
+
+.wallet::-webkit-scrollbar {
   width: 0;
   display: none;
 
+}
+
+.shadow-minee {
+  box-shadow: 0 0 3px 3px #00000007;
+  background-color: #fff;
 }
