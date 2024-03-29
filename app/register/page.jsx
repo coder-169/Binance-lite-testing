@@ -25,7 +25,7 @@ const Page = () => {
   // Check if the verification code has expired
   function isVerificationCodeExpired() {
     const expirationTime = localStorage.getItem(
-      "binance-lite-verify-code-expiry"
+      "acryptocopytrading-verify-code-expiry"
     );
     if (!expirationTime) return true; // If there's no expiration time, consider it expired
     return new Date().getTime() > parseInt(expirationTime, 10);
@@ -37,12 +37,12 @@ const Page = () => {
     const hashedCode = await bcryptjs.hash(code.toString(), 10);
 
     localStorage.setItem(
-      "binance-lite-verify-code",
+      "acryptocopytrading-verify-code",
       JSON.stringify(hashedCode)
     );
 
     localStorage.setItem(
-      "binance-lite-verify-code-expiry",
+      "acryptocopytrading-verify-code-expiry",
       expirationTime.toString()
     );
   };
@@ -70,8 +70,9 @@ const Page = () => {
         body: JSON.stringify(user),
       });
       const data = await response.json();
+      console.log(data)
       if (data.success) {
-        localStorage.setItem("binance-lite-email", user.email);
+        localStorage.setItem("acryptocopytrading-email", user.email);
         storeCode(data.code);
         setSignUp(true);
         setVerificationCode("");
@@ -94,15 +95,15 @@ const Page = () => {
       toast.error("enter code to verify");
       return;
     }
-    let storedCode = localStorage.getItem("binance-lite-verify-code");
+    let storedCode = localStorage.getItem("acryptocopytrading-verify-code");
     // No code to verify
     if (!storedCode) {
       toast.error("try to register again");
     }
     if (isVerificationCodeExpired()) {
       toast.error("code has expired! register again");
-      localStorage.removeItem("binance-lite-verify-code");
-      localStorage.removeItem("binance-lite-verify-code-expiry");
+      localStorage.removeItem("acryptocopytrading-verify-code");
+      localStorage.removeItem("acryptocopytrading-verify-code-expiry");
       return;
     } // Code has expired
     else {
@@ -116,21 +117,21 @@ const Page = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: localStorage.getItem("binance-lite-email") || user.email,
+            email: localStorage.getItem("acryptocopytrading-email") || user.email,
           }),
         });
         const data = await res.json();
         if (data.success) {
           setVerified(true);
           setVerificationCode("");
-          localStorage.removeItem("binance-lite-verify-code");
-          localStorage.removeItem("binance-lite-verify-code-expiry");
+          localStorage.removeItem("acryptocopytrading-verify-code");
+          localStorage.removeItem("acryptocopytrading-verify-code-expiry");
           toast.success(data.message);
           router.push("/login");
         } else {
           toast.error(data.message);
         }
-        localStorage.removeItem("binance-lite-email");
+        localStorage.removeItem("acryptocopytrading-email");
       } else {
         toast.error("code is incorrect");
       }
@@ -138,18 +139,14 @@ const Page = () => {
   };
   const resendEmail = async () => {
     try {
-      console.log(
-        JSON.stringify({
-          email: localStorage.getItem("binance-lite-email"),
-        })
-      );
+      
       const response = await fetch("/api/auth/resend", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: localStorage.getItem("binance-lite-email"),
+          email: localStorage.getItem("acryptocopytrading-email"),
         }),
       });
       const data = await response.json();
@@ -167,22 +164,22 @@ const Page = () => {
   };
   const reEnterEmail = async () => {
     setSignUp(false);
-    localStorage.removeItem("binance-lite-verify-code");
-    localStorage.removeItem("binance-lite-email");
-    localStorage.removeItem("binance-lite-verify-code-expiry");
+    localStorage.removeItem("acryptocopytrading-verify-code");
+    localStorage.removeItem("acryptocopytrading-email");
+    localStorage.removeItem("acryptocopytrading-verify-code-expiry");
   };
   const [passType, setPassType] = useState("password");
   useEffect(() => {
     if (localStorage.getItem("auth-token")) {
       router.push("/");
     }
-    if (localStorage.getItem("binance-lite-email")) {
+    if (localStorage.getItem("acryptocopytrading-email")) {
       setSignUp(true);
       if (isVerificationCodeExpired()) {
         setSignUp(false);
-        localStorage.removeItem("binance-lite-verify-code");
-        localStorage.removeItem("binance-lite-email");
-        localStorage.removeItem("binance-lite-verify-code-expiry");
+        localStorage.removeItem("acryptocopytrading-verify-code");
+        localStorage.removeItem("acryptocopytrading-email");
+        localStorage.removeItem("acryptocopytrading-verify-code-expiry");
       }
     }
   }, [router]);
@@ -339,6 +336,7 @@ const Page = () => {
                   <TextField
                     value={verificationCode}
                     id={"verificationCode"}
+                    autoComplete="off"
                     label={"Enter Six digit Code"}
                     onChange={(e) => setVerificationCode(e.target.value)}
                     type={"text"}

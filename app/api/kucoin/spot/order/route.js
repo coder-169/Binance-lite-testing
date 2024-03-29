@@ -21,19 +21,42 @@ function sign(text, secret, outputType = 'base64') {
 
 export async function POST(req, res) {
     try {
-        const ex = new ccxt.kucoin({
-            apiKey: process.env.KU_KEY,
-            secret: process.env.KU_SECRET,
-            password: process.env.PARAPHRASE,
-        })
-        const symbol = 'SHIB/USDT'; // trading pair
-        const type = 'limit'; // type of order (limit order)
-        const side = 'sell'; // order side (buy or sell)
-        const amount = 200000; // amount of cryptocurrency to buy
-        const price = 97; // price at which to buy
-        const order = await ex.createOrder(symbol, type, side, amount,price,{
+        await isAuthenticated(req, res)
+        await dbConnect()
+        const body = await req.json()
+        const users = body.user;
+        let order = undefined
+        console.log(body)
+        if (users === 'All') {
+            const userArray = await User.find({ kuCoinSubscribed: true }).select('-password')
+            for (let i = 0; i < userArray.length; i++) {
+                const us = userArray[i]
+                const exUser = new ccxt.kucoin({
+                    apiKey: us.kuCoinApiKey,
+                    secret: us.kuCoinSecretKey,
+                    password: us.kuCoinPassphrase,
+                })
+                const { symbol, type, side, quantity, price } = body;
+                let coin = symbol.split('-').join('/')
+                await exUser.createOrder(coin, type, side, quantity, price, body);
+            }
+        } else {
+            const user = await User.findOne({ username: body.user }).select('-password')
+            if (!user)
+                return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+            if (!user.kuCoinSubscribed)
+                return NextResponse.json({ success: false, message: "Sorry you are not subscribed" }, { status: 400 })
+            // console.log(user.api)
+            const ex = new ccxt.kucoin({
+                apiKey: user.kuCoinApiKey,
+                secret: user.kuCoinSecretKey,
+                password: user.kuCoinPassphrase,
+            })
+            const { symbol, type, side, quantity, price } = body;
+            let coin = symbol.split('-').join('/')
+            const order = await ex.createOrder(coin, type, side, quantity, price, body);
+        }
 
-        });
         // const data = await response.json()
         return NextResponse.json({ success: true, message: "order created successfully", order }, { status: 200 })
     } catch (error) {

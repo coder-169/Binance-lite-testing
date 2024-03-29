@@ -34,39 +34,39 @@ export const sendEmail = async (req, res, mailOptions) => {
     }
 }
 export const makeOptions = async ({ quantity, symbol, limit, type, quoteOrderQty, side, stopPrice, price }) => {
-    if (type === "MARKET") {
+    if (type === "MARKET".toLowerCase()) {
         return quantity === '' ? { error: true } : { quantity: parseFloat(parseFloat(quantity).toFixed(3)), }
     }
-    if (type === "LIMIT") {
+    if (type === "LIMIT".toLowerCase()) {
         if (quantity === '' || price === '')
             return { error: true }
         return { quantity: parseFloat(parseFloat(quantity).toFixed(3)), price: parseFloat(parseFloat(price).toFixed(3)), timeInForce: 'GTC', }
     }
-    if (type === "STOP_LOSS") {
+    if (type === "STOP_LOSS".toLowerCase()) {
         if (quantity === '' || stopPrice === '')
             return { error: true }
 
         return { quantity: parseFloat(parseFloat(quantity).toFixed(3)), stopPrice: parseFloat(parseFloat(stopPrice).toFixed(3)) }
     }
-    if (type === "STOP_LOSS_LIMIT") {
+    if (type === "STOP_LOSS_LIMIT".toLowerCase()) {
         if (quantity === '' || price === '' || stopPrice === '')
             return { error: true }
 
         return { timeInForce: 'GTC', quantity: parseFloat(parseFloat(quantity).toFixed(3)), stopPrice: parseFloat(parseFloat(stopPrice).toFixed(3)), price: parseFloat(parseFloat(price).toFixed(3)) }
     }
-    if (type === "TAKE_PROFIT") {
+    if (type === "TAKE_PROFIT".toLowerCase()) {
         if (quantity === '' || stopPrice === '')
             return { error: true }
 
         return { quantity: parseFloat(parseFloat(quantity).toFixed(3)), stopPrice: parseFloat(parseFloat(stopPrice).toFixed(3)) }
     }
-    if (type === "TAKE_PROFIT_LIMIT") {
+    if (type === "TAKE_PROFIT_LIMIT".toLowerCase()) {
         if (quantity === '' || price === '' || stopPrice === '')
             return { error: true }
 
         return { timeInForce: 'GTC', quantity: parseFloat(parseFloat(quantity).toFixed(3)), stopPrice: parseFloat(parseFloat(stopPrice).toFixed(3)), price: parseFloat(parseFloat(price).toFixed(3)) }
     }
-    if (type === "LIMIT_MAKER") {
+    if (type === "LIMIT_MAKER".toLowerCase()) {
         if (quantity === '' || price === '')
             return { error: true }
         return { quantity: parseFloat(parseFloat(quantity).toFixed(3)), price: parseFloat(parseFloat(price).toFixed(3)) }

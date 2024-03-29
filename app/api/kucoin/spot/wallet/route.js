@@ -20,53 +20,23 @@ function sign(text, secret, outputType = 'base64') {
 
 export async function GET(req, res) {
     try {
-        console.log('called')
+        await isAuthenticated(req, res)
+        await dbConnect()
+        console.log(req.user)
+        const user = await User.findById(req.user).select('-password');
+        if (!user)
+            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+        if (!user.kuCoinSubscribed)
+            return NextResponse.json({ success: false, message: "Sorry you are not subscribed" }, { status: 400 })
+        console.log(user.kuCoinApiKey,user.kuCoinPassphrase,user.kuCoinSecretKey,)
         const ex = new ccxt.kucoin({
-            apiKey: process.env.KU_KEY,
-            secret: process.env.KU_SECRET,
-            password: process.env.PARAPHRASE,
+            apiKey: user.kuCoinApiKey,
+            secret: user.kuCoinSecretKey,
+            password: user.kuCoinPassphrase,
         })
         const response = await ex.fetchBalance()
-        console.log(response)
-        // await isAuthenticated(req, res)
-        // await dbConnect()
-        // const user = await User.findById(req.user).select('-password')
-        // const user = await User.findOne({ username: req.user }).select('-password')
-        // // const client = new Spot(process.env.ORIG_WALLET_API_KEY, process.env.ORIG_WALLET_SECRET_KEY)
-        // if (!user)
-        //     return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
-        // if (!user.isSubscribed)
-        //     return NextResponse.json({ success: false, message: "user not subscribed" }, { status: 400 })
-        // const url = process.env.KU_BASE + `/api/v2/user-info`;
-        // const timestamp = Date.now()
-        // const signature = sign(timestamp + "GET" + '/api/v2/user-info' + "", process.env.KU_SECRET,);
-        // console.log(url)
-        // const headers = {
-        //     'KC-API-KEY': process.env.KU_KEY,
-        //     'KC-API-SIGN': signature,
-        //     'KC-API-TIMESTAMP': timestamp,
-        //     'KC-API-PASSPHRASE': process.env.PARAPHRASE || '',
-        //     'KC-API-KEY-VERSION': 2,
-        // }
-        // console.log(headers)
-        // const response = await fetch(url, {
-        //     method: "GET",
-        //     headers: {
-        //         'KC-API-KEY': process.env.KU_KEY,
-        //         'KC-API-SIGN': signature,
-        //         'KC-API-TIMESTAMP': timestamp,
-        //         'KC-API-PASSPHRASE': process.env.PARAPHRASE || '',
-        //         'Content-Type': 'application/json',
-        //         'KC-API-KEY-VERSION': 2,
-        //     }
-        // })
-
-        // if (response.status !== 200)
-        //     return NextResponse.json({ success: false, response }, { status: 200 })
-        // const data = await response.json()
-        return NextResponse.json({ success: true, message: "order created successfully", response }, { status: 200 })
+        return NextResponse.json({ success: true, message: "wallet found successfully", assets: response.info.data }, { status: 200 })
     } catch (error) {
-        console.log(error)
         if (!error.response)
             return NextResponse.json({ success: false, message: error.message }, { status: 500 })
 

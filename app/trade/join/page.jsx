@@ -16,13 +16,11 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const Join = () => {
-  const [apiKey, setApiKey] = useState();
-  const [secretKey, setSecretKey] = useState();
   const [subscriber, setSubscriber] = useState({
     apiKey: "",
     secretKey: "",
     exchange: "",
-    paraphrase: "",
+    passphrase: "",
   });
   const handleChange = (e) => {
     setSubscriber({ ...subscriber, [e.target.name]: e.target.value });
@@ -32,7 +30,6 @@ const Join = () => {
   const handleJoin = async (e) => {
     e.preventDefault();
     const { exchange, apiKey, secretKey } = subscriber;
-    console.log(subscriber);
     if (apiKey === "" || secretKey === "" || exchange === "") {
       toast.error("please enter required fields");
       return;
@@ -48,7 +45,7 @@ const Join = () => {
         body: JSON.stringify(subscriber),
       });
       const data = await response.json();
-      console.log(response.status);
+      console.log(data);
       if (data.success) {
         setUser(data.user);
         setSubscriber({
@@ -144,9 +141,9 @@ const Join = () => {
                 <TextField
                   className="w-full text-white  "
                   autoComplete="off"
-                  value={subscriber.paraphrase}
-                  name={"paraphrase"}
-                  label={"Paraphrase"}
+                  value={subscriber.passphrase}
+                  name={"passphrase"}
+                  label={"Passphrase"}
                   onChange={handleChange}
                   type={"text"}
                 />
@@ -168,6 +165,6 @@ const Join = () => {
   );
 };
 
-const exchanges = ["Binance", "KuCoin", "ByBit", "Mexc"];
+const exchanges = ["Binance", "KuCoin", "ByBit"];
 
 export default Join;

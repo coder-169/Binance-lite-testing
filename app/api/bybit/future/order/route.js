@@ -37,10 +37,15 @@ export async function POST(req, res) {
     // 80fNrSDmS1TJTZK7IA
     // 1TBrzDsfe39yRaviJs2O2pJDEBFDyIZV8P3Y
     try {
-        // const apiKey = '80fNrSDmS1TJTZK7IA';
-        // const secret = '1TBrzDsfe39yRaviJs2O2pJDEBFDyIZV8P3Y';
-        const apiKey = process.env.BYBIT_API_KEY;
-        const secret = process.env.BYBIT_SECRET_KEY;
+        await isAuthenticated(req, res)
+        await dbConnect()
+        const body = await req.json()
+        const user = await User.findOne({ username: body.user }).select('-password')
+
+        if (!user)
+            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+        const apiKey = user.byBitApiKey;
+        const secret = user.byBitSecretKey;
         const exchange = new ccxt.bybit({
             apiKey, secret, enableRateLimit: true, urls: {
                 api: {
@@ -50,15 +55,32 @@ export async function POST(req, res) {
             },
         })
         // const body = await req.json();
-        const symbol = 'BTCUSDT'; // trading pair
-        const type = 'limit'; // type of order (limit order)
-        const side = 'buy'; // order side (buy or sell)
-        const amount = 0.001; // amount of cryptocurrency to buy
-        const price = 100000; // price at which to buy
-        const order = await exchange.createOrder(symbol, type, side, amount, price, { category: "linear" });
+        // const symbol = 'BTCUSDT'; // trading pair
+        // const type = 'limit'; // type of order (limit order)
+        // const side = 'sell'; // order side (buy or sell)
+        // const amount = 0.05; // amount of cryptocurrency to buy
+        // const price = 100000; // price at which to buy
+        const { symbol, type, side, quantity, price } = body
+        // const options = customizeOptions(body)
+        let order = undefined;
 
-        console.log(order)
-        return NextResponse.json({ success: true, order }, { status: 200 })
+        console.log(body)
+        if (type === 'limit') {
+            order = await exchange.createOrder(symbol, type, side, quantity, price, { category: "linear" });
+        }
+        else if (type === 'market') {
+            order = await exchange.createOrder(symbol, type, side, quantity, 0, { category: "linear" });
+        }
+        else if (type === 'stop_loss') {
+            console.log('we"re here')
+            const { stopLoss, slLimitPrice } = body
+            order = await exchange.createOrder(symbol, 'stop', side, quantity, price, { category: "linear", stopLoss, slLimitPrice });
+        }
+        else if (type === 'take_profit') {
+            const { takeProfit, tpLimitPrice } = body
+            order = await exchange.createOrder(symbol, type, side, quantity, price, { category: "linear", takeProfit, tpLimitPrice });
+        }
+        return NextResponse.json({ success: true, order, message: 'order created successfully' }, { status: 200 })
 
     } catch (error) {
         console.log(error.message)

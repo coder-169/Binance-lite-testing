@@ -29,8 +29,17 @@ export async function GET(req, res) {
             password: process.env.PARAPHRASE,
         })
         const resp = await ex.publicGetMarketAllTickers();
+        const tickers = resp.data.ticker.sort((a, b) => {
+            if (a.symbol > b.symbol) {
+                return 1;
+            } else if (a.symbol < b.symbol) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
 
-        return NextResponse.json({ success: true, data: resp.data }, { status: 200 })
+        return NextResponse.json({ success: true, tickers }, { status: 200 })
     } catch (error) {
         console.log(error)
         if (!error.response)

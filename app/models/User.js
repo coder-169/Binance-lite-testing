@@ -20,28 +20,54 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
 
-    exchanges: [
-        {
-            name: {
-                type: String,
-            },
-            apiKey: {
-                type: String,
+    byBitSubscribed: {
+        type: Boolean,
+        default: false,
+    },
+    byBitApiKey: {
+        type: String,        default:""
 
-            },
-            secretKey: {
-                type: String,
 
-            },
-            paraphrase: {
-                type: String,
-            },
-            isSubscribed: {
-                type: Boolean,
-            },
-        }
-    ],
+    },
+    byBitSecretKey: {
+        type: String,        default:""
+
+    },
+    binanceSubscribed: {
+        type: Boolean,
+        default: false,
+    },
+    binanceApiKey: {
+        type: String,        default:""
+
+    },
+    binanceSecretKey: {
+        type: String,
+        default:""
+
+    },
+    kuCoinSubscribed: {
+        type: Boolean,
+        default: false,
+    },
+    kuCoinApiKey: {
+        type: String, default: ""
+
+    },
+    kuCoinSecretKey: {
+        type: String,
+        default: ""
+
+    },
+    kuCoinPassphrase: {
+        type: String,
+        default: ""
+    },
     role: {
         type: String,
         default: "user",

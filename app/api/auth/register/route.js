@@ -12,7 +12,7 @@ export async function POST(req, res) {
         await dbConnect()
         let body = await req.json();
         let user = await User.findOne({ $or: [{ email: body.email }, { username: body.username }, { phone: body.phone }] })
-        let code = generateCode()
+        let code = await generateCode()
         const { username, email, phone, password, apiKey, secretKey } = body
         if (user)
             return NextResponse.json({ success: false, message: `try different Details` }, {
@@ -51,7 +51,7 @@ export const resendCode = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user)
             return res.json({ success: false, message: 'user not found' })
-        let code = generateCode()
+        let code = await generateCode()
         const mailOptions = {
             from: process.env.EMAIL,
             to: email,

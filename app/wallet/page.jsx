@@ -117,6 +117,9 @@ export default function FullWidthTabs() {
   };
 
   useEffect(() => {
+    if (!localStorage.getItem('auth-token')) {
+      router.push('/login')
+    }
     getUserInfo();
     getUserWallet();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -11,6 +11,8 @@ const AppProvider = ({ children }) => {
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(false)
     const getUserInfo = async () => {
+        if (user?.kuCoinSubscribed)
+            return
         if (!localStorage.getItem('auth-token'))
             return
         setLoading(true)
@@ -26,7 +28,7 @@ const AppProvider = ({ children }) => {
                 }
             );
             const data = await response.json();
-      
+
             if (response.status === 404) {
                 localStorage.removeItem('auth-token')
                 router.push('/login')

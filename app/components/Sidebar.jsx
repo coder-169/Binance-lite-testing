@@ -28,8 +28,8 @@ const Sidebar = () => {
     setPathName(window.location.pathname);
   }, []);
   return (
-    <div className={`bg-white w-full z-50 relative h-full`}>
-      <div className="!z-50 lg:hidden absolute top-4 left-4">
+    <div className={`bg-white w-full z-[51] relative h-full`}>
+      <div className="!z-[51] lg:hidden absolute top-4 left-4">
         {!menu ? (
           <button onClick={() => setMenu(true)}>
             <MenuRoundedIcon />{" "}
@@ -109,22 +109,31 @@ const Sidebar = () => {
               </AccordionSummary>
               <AccordionDetails>
                 <Link
-                  href="/trade/spot"
+                  href="/trade/kucoin"
                   className={`${
-                    pathName === "/trade/spot" && "bg-gray-200"
+                    pathName === "/trade/kucoin" && "bg-gray-200"
                   } flex gap-4 px-4 transition-all duration-200 py-1.5 hover:bg-gray-200`}
                 >
                   <CurrencyBitcoinRoundedIcon />
-                  <Typography>Spot</Typography>
+                  <Typography>KuCoin</Typography>
                 </Link>
                 <Link
-                  href="/trade/future"
+                  href="/trade/binance"
                   className={`${
-                    pathName === "/trade/future" && "bg-gray-200"
+                    pathName === "/trade/binance" && "bg-gray-200"
                   } flex gap-4 px-4 transition-all duration-200 py-1.5 hover:bg-gray-200`}
                 >
                   <CurrencyBitcoinRoundedIcon />
-                  <Typography>Futures</Typography>
+                  <Typography>Binance</Typography>
+                </Link>
+                <Link
+                  href="/trade/bybit"
+                  className={`${
+                    pathName === "/trade/bybit" && "bg-gray-200"
+                  } flex gap-4 px-4 transition-all duration-200 py-1.5 hover:bg-gray-200`}
+                >
+                  <CurrencyBitcoinRoundedIcon />
+                  <Typography>ByBit</Typography>
                 </Link>
               </AccordionDetails>
             </Accordion>

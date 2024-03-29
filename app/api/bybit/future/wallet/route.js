@@ -19,21 +19,19 @@ export async function GET(req, res) {
         // const client = new Spot(process.env.ORIG_WALLET_API_KEY, process.env.ORIG_WALLET_SECRET_KEY)
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
-        if (!user.isSubscribed)
+        if (!user.byBitSubscribed)
             return NextResponse.json({ success: false, message: "user not subscribed" }, { status: 400 })
-        console.log(user.api)
         const params = {
             timestamp: Date.now(),
         }
         let queryString = Object.keys(params).map(key => `${key}=${encodeURIComponent(params[key])}`).join('&');
-        const signature = crypto.createHmac('sha256', user.secret).update(queryString).digest('hex')
+        const signature = crypto.createHmac('sha256', user.byBitSecretKey).update(queryString).digest('hex')
         queryString += '&signature=' + signature;
-        console.log(signature)
         const url = BASE_URL + `/fapi/v2/account?` + queryString;
         console.log(url)
         const response = await fetch(url, {
             headers: {
-                'X-MBX-APIKEY': user.api,
+                'X-MBX-APIKEY': user.byBitApiKey,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         })

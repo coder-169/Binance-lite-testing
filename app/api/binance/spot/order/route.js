@@ -1,5 +1,5 @@
 import dbConnect from "@/app/helpers/db"
-import { isAuthenticated } from "@/app/helpers/functions"
+import { isAuthenticated, makeOptions } from "@/app/helpers/functions"
 import User from "@/app/models/User"
 import { Spot } from "@binance/connector"
 import jwt from "jsonwebtoken"
@@ -32,18 +32,30 @@ export async function POST(req, res) {
         const body = await req.json()
         await isAuthenticated(req, res)
         await dbConnect()
-        const user = await User.findOne({ username: body.user }).select('-password')
-        // const client = new Spot(process.env.ORIG_WALLET_API_KEY, process.env.ORIG_WALLET_SECRET_KEY)
-        if (!user)
-            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
-        if (!user.isSubscribed)
-            return NextResponse.json({ success: false, message: "user not subscribed" }, { status: 400 })
-        const client = new Spot(process.env.WALLET_SECRET_KEY, process.env.WALLET_API_KEY, { baseURL: "https://testnet.binance.vision" })
-        // const client = new Spot(user.api, user.secret, { baseURL: "https://testnet.binance.vision" })
-        const { symbol, type, side, options } = body;
-        const response = await client.newOrder(symbol, side, type, options)
-        if (response.status !== 200)
-            return NextResponse.json({ success: false, message: response.statusText, res }, { status: 200 })
+        let users = body.user
+        if (users === 'All') {
+            const userArray = await User.find({ binanceSubscribed: true }).select('-password')
+            for (let i = 0; i < userArray.length; i++) {
+                const us = userArray[i]
+                const client = new Spot(us.binanceApiKey, us.binanceSecretKey,)
+                const { symbol, type, side, } = body;
+                const options = await makeOptions(body)
+                await client.newOrder(symbol, side, type, options)
+            }
+        } else {
+
+            const user = await User.findOne({ username: body.user }).select('-password')
+            if (!user)
+                return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+            if (!user.binanceSubscribed)
+                return NextResponse.json({ success: false, message: "Sorry you are not subscribed" }, { status: 400 })
+            const client = new Spot(user.binanceApiKey, user.binanceSecretKey,)
+            const { symbol, type, side, } = body;
+            const options = await makeOptions(body)
+            const response = await client.newOrder(symbol, side, type, options)
+            if (response.status !== 200)
+                return NextResponse.json({ success: false, message: response.statusText, res }, { status: 200 })
+        }
         return NextResponse.json({ success: true, message: "order created successfully", res }, { status: 200 })
     } catch (error) {
         console.log(error.response)

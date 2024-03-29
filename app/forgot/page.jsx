@@ -185,6 +185,7 @@ const Page = () => {
                 <TextField
                   value={code}
                   name={"code"}
+                  autoComplete="off"
                   label={"Enter Six Digit Code"}
                   onChange={(e) => setCode(e.target.value)}
                   type="number"
@@ -218,6 +219,7 @@ const Page = () => {
                     value={email}
                     name={"email"}
                     label={"Email"}
+                    autoComplete="off"
                     onChange={(e) => setEmail(e.target.value)}
                     type="email"
                   />
@@ -244,22 +246,28 @@ const Page = () => {
           ) : (
             <form onSubmit={changePassword} className="w-full mx-auto">
               <div className="my-4">
-                <TextField
-                  value={newPass}
-                  name={"newPass"}
-                  label={"New Password"}
-                  onChange={(e) => setNewPass(e.target.value)}
-                  type="password"
-                />
+                <FormControl fullWidth>
+                  <TextField
+                    value={newPass}
+                    name={"newPass"}
+                    label={"New Password"}
+                    autoComplete="off"
+                    onChange={(e) => setNewPass(e.target.value)}
+                    type="password"
+                  />
+                </FormControl>
               </div>
               <div className="my-4">
-                <TextField
-                  value={confirmPass}
-                  name={"confirmPass"}
-                  label={"Confirm Password"}
-                  onChange={(e) => setConfirmPass(e.target.value)}
-                  type="password"
-                />
+                <FormControl fullWidth>
+                  <TextField
+                    value={confirmPass}
+                    name={"confirmPass"}
+                    label={"Confirm Password"}
+                    onChange={(e) => setConfirmPass(e.target.value)}
+                    autoComplete="off"
+                    type="password"
+                  />
+                </FormControl>
               </div>
               <div className="my-4 text-center">
                 <Button

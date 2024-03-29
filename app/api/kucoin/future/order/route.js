@@ -10,34 +10,37 @@ import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import crypto from "crypto"
 import ccxt from "ccxt"
-export async function GET(req, res) {
+export async function POST(req, res) {
     try {
 
-        // await isAuthenticated(req, res)
-        // await dbConnect()
-        // const user = await User.findById(req.user).select('-password')
-        // // const user = await User.findOne({ username: req.user }).select('-password')
-        // // const client = new Spot(process.env.ORIG_WALLET_API_KEY, process.env.ORIG_WALLET_SECRET_KEY)
-        // if (!user)
-        //     return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
-        // if (!user.isSubscribed)
-        //     return NextResponse.json({ success: false, message: "user not subscribed" }, { status: 400 })
+        await isAuthenticated(req, res)
+        await dbConnect()
+        const body = await req.json()
+        const user = await User.findById(req.user).select('-password')
+        if (!user)
+        return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+    if (!user.kuCoinSubscribed)
+        return NextResponse.json({ success: false,  }, { status: 400 })
         // console.log(user.api)
         const ex = new ccxt.kucoinfutures({
-            apiKey: process.env.KU_KEY,
-            secret: process.env.KU_SECRET,
-            password: process.env.PARAPHRASE,
+            apiKey: user.kuCoinApiKey,
+            secret: user.kuCoinSecretKey,
+            password: user.kuCoinPassphrase,
         })
 
-        const price = 0.0000338
-        const amount = 1
-        const symbol = 'SHIBUSDTM'
-        const side = 'buy'
-        const type = 'limit'
+        // const price = 0.0000338
+        // const amount = 1
+        // const symbol = 'SHIBUSDTM'
+        // const side = 'buy'
+        // const type = 'limit'
 
-        const resp = await ex.createOrder(symbol, type, side, amount, price)
-
-        return NextResponse.json({ success: true, data: resp }, { status: 200 })
+        const { symbol, type, side, quantity, price } = body;
+        let coin = symbol.split('-').join('/')
+        console.log(coin)
+        const order = await ex.createOrder(coin, type, side, quantity, price, body);
+        console.log(order)
+        // const data = await response.json()
+        return NextResponse.json({ success: true, message: "order created successfully", order }, { status: 200 })
     } catch (error) {
         console.log(error)
         if (!error.response)

@@ -2,6 +2,7 @@ import dbConnect from "@/app/helpers/db"
 import { isAuthenticated } from "@/app/helpers/functions"
 import User from "@/app/models/User"
 import { Spot } from "@binance/connector"
+import ccxt from "ccxt"
 import jwt from "jsonwebtoken"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
@@ -31,54 +32,55 @@ export async function POST(req, res) {
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
 
         // const resp = await verifyKeys({}, '')
-        const { exchange, apiKey, secretKey, paraphrase } = body;
+        const { exchange, apiKey, secretKey, passphrase } = body;
         // if (!resp.status)
         //     return NextResponse.json({ success: false, message: resp.msg })
+        console.log(body)
         if (exchange?.toLowerCase() === 'kucoin') {
-            const obj = {
-                exchange,
-                apiKey,
-                secretKey,
-                paraphrase,
-                isSubscribed: true,
+            if (user.kuCoinSubscribed) {
+                return NextResponse.json({ success: false, message: 'User already joined' }, { status: 400 })
             }
-            user.exchanges.push(obj)
-        }
-        if (exchange?.toLowerCase() === 'mexc') {
-            const obj = {
-                exchange,
-                apiKey,
-                secretKey,
-                isSubscribed: true,
-            }
-            user.exchanges.push(obj)
+            const ex = new ccxt.kucoin({ apiKey, secret: secretKey, password: passphrase })
+            const res = await ex.fetchBalance();
+            user.kuCoinApiKey = apiKey
+            user.kuCoinSecretKey = secretKey
+            user.kuCoinPassphrase = passphrase
+            user.kuCoinSubscribed = true
         }
         if (exchange?.toLowerCase() === 'bybit') {
-            const obj = {
-                exchange,
-                apiKey,
-                secretKey,
-                isSubscribed: true,
+            if (user.byBitSubscribed) {
+                return NextResponse.json({ success: false, message: 'User already joined' }, { status: 400 })
             }
-            user.exchanges.push(obj)
+            const ex = new ccxt.bybit({
+                apiKey, secret: secretKey, enableRateLimit: true, urls: {
+                    api: {
+                        public: 'https://api-testnet.bybit.com',
+                        private: 'https://api-testnet.bybit.com',
+                    },
+                },
+            })
+            const bal = await ex.fetchBalance()
+            user.byBitApiKey = apiKey
+            user.byBitSecretKey = secretKey
+            user.byBitSubscribed = true
         }
         if (exchange?.toLowerCase() === 'binance') {
-            const obj = {
-                exchange,
-                apiKey,
-                secretKey,
-                isSubscribed: true,
+            if (user.binanceSubscribed) {
+                return NextResponse.json({ success: false, message: 'User already joined' }, { status: 400 })
             }
-            user.exchanges.push(obj)
+            const ex = new ccxt.binance({
+                apiKey,
+                secret: secretKey,
+            })
+            const bal = await ex.fetchBalance()
+            user.binanceApiKey = apiKey
+            user.binanceSecretKey = secretKey
+            user.binanceSubscribed = true
         }
         await user.save()
         return NextResponse.json({ success: true, message: "successfully subscribed", user }, { status: 200 })
 
     } catch (error) {
-        console.log(error.message)
-        if (error.response.status === 401) {
-            return NextResponse.json({ success: false, message: 'Invalid Api Key or Secret' }, { status: error.response.status })
-        }
         return NextResponse.json({ success: false, message: error.message }, { status: 500 })
     }
 }
@@ -92,10 +94,23 @@ export async function GET(req, res) {
         const user = await User.findById(data.id).select('-password')
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
-
-        user.api = ''
-        user.secret = ''
-        user.isSubscribed = false
+        const exchange = headerList.get('ex')
+        if (exchange === 'kucoin') {
+            user.kuCoinApiKey = apiKey
+            user.kuCoinSecretKey = secretKey
+            user.kuCoinPassphrase = passphrase
+            user.kuCoinSubscribed = true
+        }
+        if (exchange === 'bybit') {
+            user.byBitApiKey = apiKey
+            user.byBitSecretKey = secretKey
+            user.byBitSubscribed = true
+        }
+        if (exchange === 'binance') {
+            user.binanceApiKey = apiKey
+            user.binanceSecretKey = secretKey
+            user.binanceSubscribed = true
+        }
         await user.save()
         return NextResponse.json({ success: true, message: "successfully unsubscribed", user }, { status: 200 })
 

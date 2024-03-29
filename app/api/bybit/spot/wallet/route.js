@@ -12,8 +12,14 @@ function getSignature(data, secret) {
 export async function GET(req, res) {
 
     try {
-        const apiKey = process.env.BYBIT_API_KEY;
-        const secret = process.env.BYBIT_SECRET_KEY;
+        await isAuthenticated(req, res)
+        await dbConnect()
+        const user = await User.findById(req.user).select('-password')
+
+        if (!user)
+            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+        const apiKey = user.byBitApiKey;
+        const secret = user.byBitSecretKey;
         const recvWindow = '5000';
         const timestamp = Date.now().toString();
         const parameters = {
@@ -34,7 +40,9 @@ export async function GET(req, res) {
                 'Content-Type': 'application/json; charset=utf-8'
             },
         })
-        return NextResponse.json({ success: true, response: await resp.json() }, { status: 200 })
+        const data = await resp.json();
+        const assets = data.result.balance.filter(asset => asset.walletBalance > 0)
+        return NextResponse.json({ success: true, assets }, { status: 200 })
 
     } catch (error) {
 
