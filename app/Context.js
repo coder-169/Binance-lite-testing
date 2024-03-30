@@ -28,7 +28,7 @@ const AppProvider = ({ children }) => {
                 }
             );
             const data = await response.json();
-
+                console.log(data)
             if (response.status === 404) {
                 localStorage.removeItem('auth-token')
                 router.push('/login')

@@ -80,7 +80,7 @@ export const isAuthenticated = async (req, res) => {
         if (!token)
             return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
         const data = jwt.verify(token, process.env.JWT_SECRET)
-        req.user = data.id
+        req.user = data.id                   
     } catch (error) {
         return NextResponse.json({ success: false, message: error.message }, { status: 401 })
     }
