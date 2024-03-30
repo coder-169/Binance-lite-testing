@@ -86,7 +86,7 @@ export async function POST(req, res) {
         { status: 404 }
       );
     const users = body.user;
-    if (users === "all") {
+    if (users === "All") {
       const userArray = await User.find({ binanceSubscribed: true }).select(
         "-password"
       );

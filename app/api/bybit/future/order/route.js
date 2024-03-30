@@ -86,7 +86,7 @@ export async function POST(req, res) {
     const body = await req.json();
     const user = await User.findOne(data.id).select("-password");
     const users = body.user;
-    if (users === "all") {
+    if (users === "All") {
       const userArray = await User.find({ byBitSubscribed: true }).select(
         "-password"
       );
