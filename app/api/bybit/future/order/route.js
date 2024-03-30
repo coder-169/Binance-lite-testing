@@ -40,6 +40,7 @@ export async function POST(req, res) {
         await isAuthenticated(req, res)
         await dbConnect()
         const body = await req.json()
+        console.log(body)
         const user = await User.findOne({ username: body.user }).select('-password')
 
         if (!user)

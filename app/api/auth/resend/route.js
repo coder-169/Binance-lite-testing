@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(req,res) {
     try {
-        const { email } = req.body
+        const body = await req.json()
+        const { email } = body;
         if (!email)
             return NextResponse.json({ success: false, message: 'invalid email' })
         const user = await User.findOne({ email });

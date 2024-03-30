@@ -16,6 +16,8 @@ export async function POST(req, res) {
         await isAuthenticated(req, res)
         await dbConnect()
         const body = await req.json()
+        console.log(body)
+
         const user = await User.findById(req.user).select('-password')
         if (!user)
         return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })

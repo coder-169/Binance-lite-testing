@@ -64,7 +64,6 @@ export async function GET(req, res) {
             })
             coins = await ex.publicGetExchangeInfo()
             coinsFuture = await ex.fapiPublicGetExchangeInfo()
-            console.log(coinsFuture)
             tickers = coins.symbols.sort((a, b) => {
                 if (a.symbol > b.symbol) {
                     return 1;

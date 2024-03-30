@@ -25,7 +25,7 @@ export async function GET(req, res) {
         console.log(req.user)
         const user = await User.findById(req.user).select('-password');
         if (!user)
-            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+            return NextResponse.json({ success: false, message: "user not found" ,us:req.user,user}, { status: 404 })
         if (!user.kuCoinSubscribed)
             return NextResponse.json({ success: false, message: "Sorry you are not subscribed" }, { status: 400 })
         console.log(user.kuCoinApiKey,user.kuCoinPassphrase,user.kuCoinSecretKey,)
