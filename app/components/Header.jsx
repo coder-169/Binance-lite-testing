@@ -56,7 +56,7 @@ const Header = () => {
               <HomeRoundedIcon /> Home
             </Link>
           </li>
-          <li className="my-4">
+          {isAuthenticated ? <li className="my-4">
             <Accordion
               expanded={
                 expanded ||
@@ -129,8 +129,8 @@ const Header = () => {
                 </Link>
               </AccordionDetails>
             </Accordion>
-          </li>
-          <li className="my-4">
+          </li>:""}
+        {isAuthenticated?  <li className="my-4">
             <Link
               className="flex px-8 transition-all duration-200 py-4 gap-4 hover:bg-gray-100"
               href="/trade/join"
@@ -138,7 +138,7 @@ const Header = () => {
               {" "}
               <CurrencyBitcoinRoundedIcon /> Join
             </Link>
-          </li>
+          </li>:""}
           {isAuthenticated ? (
             <li className="my-4">
               <button

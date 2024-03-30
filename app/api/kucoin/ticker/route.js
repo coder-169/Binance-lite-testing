@@ -13,23 +13,19 @@ import ccxt from "ccxt"
 export async function GET(req, res) {
     try {
 
-        await isAuthenticated(req, res)
-        await dbConnect()
-        const user = await User.findById(req.user).select('-password')
-        if (!user) {
-            return NextResponse.json({ success: false, message: 'user not found' }, { status: 404 })
-        }
-        const ex = new ccxt.binance({
-            apiKey: user.binanceApiKey,
-            secret: user.binanceSecretKey,
+       
+        const ex = new ccxt.kucoin({
+            apiKey: process.env.KU_KEY,
+            secret: process.env.KU_SECRET,
+            password: process.env.PARAPHRASE,
         })
-        const response = await ex.fapiPrivateV2GetBalance();
-        const assets = response?.filter(asset => asset.balance > 0)
 
-        return NextResponse.json({ success: true, assets }, { status: 200 })
+        return NextResponse.json({ success: true, tickers }, { status: 200 })
     } catch (error) {
+        console.log(error)
         if (!error.response)
             return NextResponse.json({ success: false, message: error.message }, { status: 500 })
+
         return NextResponse.json({ success: false, message: error.response.data.msg }, { status: 500 })
     }
 }

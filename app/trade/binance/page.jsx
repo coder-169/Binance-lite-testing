@@ -769,8 +769,10 @@ export default function FullWidthTabs() {
                               />
                             </div>
                             <div className="w-full md:w-1/2 hidden sm:block mb-2 sm:my-4">
+                              <Typography>Leverage</Typography>
                               <Slider
-                                getAriaLabel={() => "Temperature range"}
+                                getAriaLabel={() => "Leverage"}
+                                name="leverage"
                                 value={order.leverage}
                                 onChange={handleChangeLeverage}
                                 valueLabelDisplay="auto"

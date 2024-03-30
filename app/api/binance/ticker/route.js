@@ -8,7 +8,6 @@ const BASE_URL = 'https://fapi.binance.com'
 export async function POST(req, res) {
     try {
         const headerList = headers();
-        const ex = headerList.get('exchange')
         const mark = headerList.get('mark')
         const body = await req.json()
         let tickerPrice = 0;

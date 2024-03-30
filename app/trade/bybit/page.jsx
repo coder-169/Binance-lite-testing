@@ -162,7 +162,7 @@ export default function FullWidthTabs() {
       ...order,
       symbol: value,
     });
-    const response = await fetch("/api/binance/ticker", {
+    const response = await fetch("/api/bybit/ticker", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -170,6 +170,7 @@ export default function FullWidthTabs() {
       },
       body: JSON.stringify({ ticker: value }),
     });
+    console.log(response)
     const data = await response.json();
     if (data.success) {
       let price = parseFloat(data.tickerPrice);
@@ -183,8 +184,7 @@ export default function FullWidthTabs() {
       ...order,
       symbol: e.target.value,
     });
-    // setTickerPrice(4)
-    const response = await fetch("/api/binance/ticker", {
+    const response = await fetch("/api/bybit/ticker", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -214,7 +214,6 @@ export default function FullWidthTabs() {
       if (data.success) {
         if (data.subscribers.length > 0) {
           const newArray = [...data.subscribers, { username: "All" }]
-          console.log(newArray)
           setUsers(newArray);
         }
         setCoins(data.tickers);
@@ -453,6 +452,7 @@ export default function FullWidthTabs() {
                                   })}
                                 </Select>
                               </FormControl>
+                              {tickerPrice ? <small className="text-xs">{tickerPrice}</small> : ""}
                             </div>
                             <div className="w-full text-left hidden sm:block mb-4 sm:my-8">
                               <TextField
@@ -701,6 +701,7 @@ export default function FullWidthTabs() {
                                   })}
                                 </Select>
                               </FormControl>
+                              {tickerPrice ? <small className="text-xs">{tickerPrice}</small> : ""}
                             </div>
                             <div className="w-full text-left hidden sm:block mb-2 sm:my-4">
                               <TextField
@@ -731,8 +732,11 @@ export default function FullWidthTabs() {
                                 variant="outlined"
                               />
                             </div>
-                            <div className="w-full md:w-1/2 hidden sm:block mb-2 sm:my-4">
+                            <div className="w-full md:w-1/2 hidden sm:block mb-4 sm:my-4">
+                              <Typography>Leverage</Typography>
                               <Slider
+                                name="leverage"
+                                label="Leverage"
                                 getAriaLabel={() => "Temperature range"}
                                 value={order.leverage}
                                 onChange={handleChangeLeverage}
