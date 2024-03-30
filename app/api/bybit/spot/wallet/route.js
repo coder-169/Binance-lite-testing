@@ -1,6 +1,9 @@
 // // const BASE_URL = 'https://testnet.binancefuture.com'
 // const BASE_URL = 'https://fapi.binance.com'
 
+import dbConnect from '@/app/helpers/db';
+import { isAuthenticated } from '@/app/helpers/functions';
+import User from '@/app/models/User';
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 
@@ -13,9 +16,10 @@ export async function GET(req, res) {
 
     try {
         await isAuthenticated(req, res)
+        
         await dbConnect()
+        
         const user = await User.findById(req.user).select('-password')
-
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
         const apiKey = user.byBitApiKey;
@@ -41,11 +45,11 @@ export async function GET(req, res) {
             },
         })
         const data = await resp.json();
+        console.log(data)
         const assets = data.result.balance.filter(asset => asset.walletBalance > 0)
         return NextResponse.json({ success: true, assets }, { status: 200 })
 
     } catch (error) {
-
-        return NextResponse.json({ success: false, error }, { status: 200 })
+        return NextResponse.json({ success: false, error }, { status: 500 })
     }
 }

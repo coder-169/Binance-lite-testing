@@ -139,7 +139,7 @@ const Page = () => {
   };
   const resendEmail = async () => {
     try {
-      
+      console.log(localStorage.getItem("acryptocopytrading-email"))
       const response = await fetch("/api/auth/resend", {
         method: "POST",
         headers: {

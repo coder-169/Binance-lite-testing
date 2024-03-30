@@ -10,7 +10,7 @@ const UserLayout = ({ children }) => {
       <div className={`w-0 lg:w-auto`}>
         <Header />
       </div>
-      <div className="lg:w-5/6 w-full overflow-y-scroll">{children}</div>
+      <div className="lg:w-5/6 w-full overflow-y-scroll z-30">{children}</div>
     </div>
     // <div className="w-3/5 mx-auto">
     //   <Header />

@@ -22,12 +22,12 @@ export async function GET(req, res) {
         return NextResponse.json({ success: false, message: "Sorry you are not subscribed" }, { status: 400 })
         // console.log(user.api)
         const ex = new ccxt.kucoinfutures({
-            apiKey: user.kuCoinApiKey,
+        apiKey: user.kuCoinApiKey,
             secret: user.kuCoinSecretKey,
             password: user.kuCoinPassphrase,
         })
         const resp = await ex.fetchBalance()
-
+        console.log(resp)
         return NextResponse.json({ success: true, data: resp }, { status: 200 })
     } catch (error) {
         console.log(error)

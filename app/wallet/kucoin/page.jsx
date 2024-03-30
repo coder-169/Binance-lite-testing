@@ -57,7 +57,7 @@ function a11yProps(index) {
 export default function FullWidthTabs() {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
-
+    const [walletBalance, setWalletBalance] = useState(0)
     const handleChange = (event, newValue) => {
         if (newValue === 0) {
             getUserWallet('spot')
@@ -87,10 +87,15 @@ export default function FullWidthTabs() {
                 },
             });
             const data = await res.json();
+            console.log(data)
             if (!data.success) toast.error(data.message);
             if (data?.assets?.length) {
                 setWallet(data.assets);
             } else {
+                setWallet([]);
+            }
+            if(data?.data){
+                setWalletBalance(data.data.total.USDT)
                 setWallet([]);
             }
         } catch (error) {
@@ -115,6 +120,7 @@ export default function FullWidthTabs() {
             if (data.success) {
                 setUser(data.user);
                 toast.success(data.message);
+                router.push('/trade/join')
             } else {
                 toast.error(data.message);
             }
@@ -172,29 +178,8 @@ export default function FullWidthTabs() {
                                         <div className="mt-8 mx-8">
                                             <div className="mt-4 mb-8 text-left">
                                                 <span className='bg-gray-200 text-sm px-4 py-2 rounded-full'>Total assets in USDT</span>
-                                                <h2 className="text-xl mt-2 px-2  text-gray-700 font-medium">$424243</h2>
-                                                <div className="mt-2 flex gap-4">
-                                                    <Button
-                                                        className="text-white disabled:bg-blue-300 outline-white border-white bg-blue-400 hover:bg-blue-500 cursor-not-allowed transition-all duration-200 rounded-full py-1 px-3 mx-right text-sm"
-                                                        variant="outlined"
-                                                        size="small"
-                                                    >
-                                                        Deposit
-                                                    </Button>
-                                                    <button
-                                                        className="text-white bg-gray-500 cursor-not-allowed border-none  transition-all duration-200 rounded-full py-1 px-3 mx-right text-sm"
-                                                        variant="outlined"
-                                                        size="small"
-                                                    >
-                                                        Withdraw
-                                                    </button>
-                                                    <button
-                                                        className="text-white bg-gray-500 cursor-not-allowed outline-white border-none  transition-all duration-200 rounded-full py-1 px-3 mx-right text-sm"
-                                                    >
-                                                        Transfer
-                                                    </button>
-
-                                                </div>
+                                                <h2 className="text-xl mt-2 px-2  text-gray-700 font-medium">Not Available</h2>
+                                                
                                             </div>
                                             {wallet?.length === 0 ? <div className="h-[40vh] flex items-center justify-center">
                                                 <h3>No Assets found</h3></div> : <div className="mt-4 grid gap-4 p-4 grid-cols-12">
@@ -231,7 +216,10 @@ export default function FullWidthTabs() {
                                 ) : (
                                     <div className="w-full wallet mx-auto">
                                         <div className="mt-8 mx-8">
-                                            <h1 className="text-2xl font-medium">Your Wallet</h1>
+                                        <div className="mt-4 mb-8 text-left">
+                                                <span className='bg-gray-200 text-sm px-4 py-2 rounded-full'>Total assets in USDT</span>
+                                                <h2 className="text-xl mt-2 px-2  text-gray-700 font-medium">{walletBalance}</h2>
+                                            </div>
                                             {wallet?.length === 0 ? <div className="h-4/5 flex items-center justify-center">
                                                 <h3>No Assets found</h3></div> : <div className="mt-4 grid gap-4 p-4 grid-cols-12">
                                                 {wallet?.map((coin, idx) => {

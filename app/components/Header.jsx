@@ -22,7 +22,7 @@ const Header = () => {
     setExpanded((prevExpanded) => !prevExpanded);
   };
   useEffect(() => {
-    setPathName(window.location.pathname);
+  setPathName(window.location.pathname);
   }, []);
   return (
     <>
@@ -41,7 +41,7 @@ const Header = () => {
       {/* <div className={`w-full relative h-full`}> */}
       <div
         className={`${menu ? "translate-x-0" : "-translate-x-full"
-          } lg:translate-x-0 -translate-x-full w-72 z-49 transition-all duration-300 bg-white relative h-full flex justify-center flex-col items-center`}
+          } z-40 lg:translate-x-0 -translate-x-full w-72 z-49 transition-all duration-300 bg-white relative h-full flex justify-center flex-col items-center`}
       >
         <Link href={"/"} className="mb-12">
           <h3 className="text-3xl font-medium">Binance Lite</h3>

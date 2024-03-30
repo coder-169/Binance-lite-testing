@@ -74,13 +74,12 @@ export default function FullWidthTabs() {
     useGlobalContext();
   const router = useRouter();
   const [wallet, setWallet] = useState([]);
-  const getUserWallet = async (mark = 'spot') => {
-    if (user?.byBitSubscribed)
-      return
+  const getUserWallet = async () => {
+    console.log(user)
     if (!localStorage.getItem("auth-token")) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/bybit/${mark}/wallet`, {
+      const res = await fetch(`/api/bybit/spot/wallet`, {
         method: "GET",
         headers: {
           token: localStorage.getItem("auth-token"),
@@ -121,10 +120,8 @@ export default function FullWidthTabs() {
   };
 
   useEffect(() => {
-    if (user?.byBitSubscribed) {
       getUserInfo();
       getUserWallet();
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
