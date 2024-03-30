@@ -12,17 +12,6 @@ import crypto from "crypto"
 import ccxt from "ccxt"
 export async function GET(req, res) {
     try {
-
-        // await isAuthenticated(req, res)
-        // await dbConnect()
-        // const user = await User.findById(req.user).select('-password')
-        // // const user = await User.findOne({ username: req.user }).select('-password')
-        // // const client = new Spot(process.env.ORIG_WALLET_API_KEY, process.env.ORIG_WALLET_SECRET_KEY)
-        // if (!user)
-        //     return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
-        // if (!user.isSubscribed)
-        //     return NextResponse.json({ success: false, message: "user not subscribed" }, { status: 400 })
-        // console.log(user.api)
         const ex = new ccxt.kucoinfutures({
             apiKey: process.env.KU_KEY,
             secret: process.env.KU_SECRET,

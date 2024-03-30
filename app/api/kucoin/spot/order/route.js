@@ -21,12 +21,19 @@ function sign(text, secret, outputType = 'base64') {
 
 export async function POST(req, res) {
     try {
-        await isAuthenticated(req, res)
+        const headerList = headers()
+        const token = headerList.get('token')
         await dbConnect()
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+        const data = jwt.verify(token, process.env.JWT_SECRET)
+        const user = await User.findById(data.id).select('-password');
+        if (!user)
+            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+        
         const body = await req.json()
         const users = body.user;
         let order = undefined
-        console.log(body)
         if (users === 'All') {
             const userArray = await User.find({ kuCoinSubscribed: true }).select('-password')
             for (let i = 0; i < userArray.length; i++) {

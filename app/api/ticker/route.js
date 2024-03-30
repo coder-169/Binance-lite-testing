@@ -9,9 +9,17 @@ import ccxt from "ccxt"
 // Get Open Orders
 export async function POST(req, res) {
     try {
-        const body = await req.json()
-        await isAuthenticated(req, res)
+        const headerList = headers()
+        const token = headerList.get('token')
         await dbConnect()
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+        const data = jwt.verify(token, process.env.JWT_SECRET)
+        
+        const user = await User.findById(data.id).select('-password');
+        if (!user)
+        return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+        const body = await req.json()
         // const client = new Spot(process.env.ORIG_WALLET_API_KEY, process.env.ORIG_WALLET_SECRET_KEY)
         if (body.exchange === 'kucoin') {
             const ex = new ccxt.kucoin({
@@ -35,7 +43,6 @@ export async function POST(req, res) {
 
         }
     } catch (error) {
-        console.log(error.message)
         return NextResponse.json({ success: false, message: error.message }, { status: 500 })
     }
 }

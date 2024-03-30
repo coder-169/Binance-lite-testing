@@ -7,12 +7,16 @@ import { NextResponse } from "next/server"
 export async function PUT(req, res) {
     try {
         await dbConnect()
-        await isAuthenticated(req, res)
+        const headerList = headers()
+        const token = headerList.get('token')
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+       
         const body = await req.json()
         const { email } = body
         const user = await User.findOne({ email })
         if (!user)
-            return NextResponse.json({ success: false, message: 'user not found' }, { status: 404 })
+            return NextResponse.json({ success: false, message: 'invalid email! user not found' }, { status: 404 })
 
         user.password = await bcryptjs.hash(body.password, 10)
         await user.save()

@@ -58,6 +58,7 @@ export default function FullWidthTabs() {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
+    console.log(newValue)
     if (newValue === 0) {
       getUserWallet('spot')
     }
@@ -75,8 +76,6 @@ export default function FullWidthTabs() {
   const router = useRouter();
   const [wallet, setWallet] = useState([]);
   const getUserWallet = async (mark = 'spot') => {
-    if (user?.binanceSubscribed)
-      return
     if (!localStorage.getItem("auth-token")) return;
     setLoading(true);
     try {

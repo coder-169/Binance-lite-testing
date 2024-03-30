@@ -15,13 +15,16 @@ function getSignature(data, secret) {
 export async function GET(req, res) {
 
     try {
-        await isAuthenticated(req, res)
-        
+        const headerList = headers()
+        const token = headerList.get('token')
         await dbConnect()
-        
-        const user = await User.findById(req.user).select('-password')
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+        const da = jwt.verify(token, process.env.JWT_SECRET)
+        const user = await User.findById(da.id).select('-password');
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
+        
         const apiKey = user.byBitApiKey;
         const secret = user.byBitSecretKey;
         const recvWindow = '5000';

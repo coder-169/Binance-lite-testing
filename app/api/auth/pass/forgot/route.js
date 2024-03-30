@@ -8,11 +8,11 @@ import { NextResponse } from "next/server"
 export async function POST(req, res) {
     try {
         await dbConnect()
-        await isAuthenticated(req, res)
+        const headerList = headers()
         const body = await req.json()
         const { email } = body
         if (!email)
-            return NextResponse.json({ success: false, message: 'invalid email' }, { status: 400 })
+            return NextResponse.json({ success: false, message: 'invalid email!' }, { status: 400 })
         const user = await User.findOne({ email });
         if (!user)
             return NextResponse.json({ success: false, message: 'user not found' }, { status: 404 })

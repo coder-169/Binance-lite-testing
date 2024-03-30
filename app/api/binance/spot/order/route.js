@@ -9,8 +9,12 @@ import { NextResponse } from "next/server"
 // Get Open Orders
 export async function GET(req, res) {
     try {
-        await isAuthenticated(req, res)
+        const headerList = headers()
+        const token = headerList.get('token')
         await dbConnect()
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+
         const user = await User.findOne({ username: body.user }).select('-password')
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
@@ -30,8 +34,15 @@ export async function POST(req, res) {
     try {
 
         const body = await req.json()
-        await isAuthenticated(req, res)
+        const headerList = headers()
+        const token = headerList.get('token')
         await dbConnect()
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+        const data = jwt.verify(token, process.env.JWT_SECRET)
+        const user = await User.findById(data.id).select('-password');
+        if (!user)
+            return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
         let users = body.user
         if (users === 'All') {
             const userArray = await User.find({ binanceSubscribed: true }).select('-password')
@@ -58,7 +69,6 @@ export async function POST(req, res) {
         }
         return NextResponse.json({ success: true, message: "order created successfully", res }, { status: 200 })
     } catch (error) {
-        console.log(error.response)
         if (!error.response)
             return NextResponse.json({ success: false, message: error.message }, { status: 500 })
 

@@ -7,27 +7,18 @@ import jwt from "jsonwebtoken"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 
-const verifyKeys = async (keys, exchange) => {
-    if (exchange?.toLowerCase() === 'binance') {
-        // const client = new Spot(body.apiKey, body.secretKey, { baseURL: "https://testnet.binance.vision" })
-        const client = new Spot(body.apiKey, body.secretKey, { baseURL: "https://testnet.binance.vision" })
 
-        const response = await client.account()
-        if (response.status === 200)
-            return true;
-        const d = await response.json()
-        return { status: false, msg: d.msg };
-    }
-    if (exchange?.toLowerCase() === 'kucoin') { }
-    if (exchange?.toLowerCase() === 'mexc') { }
-    if (exchange?.toLowerCase() === 'bybit') { }
-}
 export async function POST(req, res) {
     try {
-        await isAuthenticated(req, res)
+        const headerList = headers()
+        const token = headerList.get('token')
         await dbConnect()
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+        const data = jwt.verify(token, process.env.JWT_SECRET)
+
         const body = await req.json()
-        const user = await User.findById(req.user).select('-password')
+        const user = await User.findById(data.id).select('-password')
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
 

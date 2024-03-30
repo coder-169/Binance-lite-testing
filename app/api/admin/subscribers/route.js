@@ -8,15 +8,17 @@ import { NextResponse } from "next/server"
 export async function GET(req, res) {
     try {
         await dbConnect()
-        await isAuthenticated(req, res)
-        const user = await User.findById(req.user).select('-password');
+        const headerList = headers()
+        const token = headerList.get('token')
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+        const data = jwt.verify(token, process.env.JWT_SECRET)
+        const user = await User.findById(data.id).select('-password');
         if (!user)
             return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
-
+        if(user.role !== 'admin')
+            return NextResponse.json({success:false,message:'role not authorized'},{status:400})
         let subscribers = []
-        // if (!subscribers)
-        //     return NextResponse.json({ success: false, message: "users not found" }, { status: 404 })
-        const headerList = headers();
         const ex = headerList.get('exchange')
         let tickers = [];
         let tickersFuture = [];

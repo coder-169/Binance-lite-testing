@@ -7,7 +7,6 @@ import { NextResponse } from "next/server"
 
 export async function GET(req, res) {
     try {
-        // await isAuthenticated(req, res)
         await dbConnect()
         const headerList = headers()
         const token = headerList.get('token')
@@ -18,7 +17,6 @@ export async function GET(req, res) {
         const user = await User.findById(data.id).select('-password')
         if (!user)
             return NextResponse.json({ success: false, message: "user not found", data }, { status: 404 })
-        console.log(user)
         return NextResponse.json({ success: true, message: "user found successfully", user }, { status: 200 })
     } catch (error) {
         return NextResponse.json({ success: false, message: error.message }, { status: 500 })

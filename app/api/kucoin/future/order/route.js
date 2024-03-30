@@ -12,13 +12,14 @@ import crypto from "crypto"
 import ccxt from "ccxt"
 export async function POST(req, res) {
     try {
-
-        await isAuthenticated(req, res)
+        const headerList = headers()
+        const token = headerList.get('token')
         await dbConnect()
+        if (!token)
+            return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
+       
         const body = await req.json()
-        console.log(body)
-
-        const user = await User.findById(req.user).select('-password')
+        const user = await User.findOne({username:body.user}).select('-password')
         if (!user)
         return NextResponse.json({ success: false, message: "user not found" }, { status: 404 })
     if (!user.kuCoinSubscribed)
