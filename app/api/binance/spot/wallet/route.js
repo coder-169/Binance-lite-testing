@@ -54,8 +54,10 @@ export async function GET(req, res) {
     const d = await response.json();
     console.log(d);
     // /api/v3/account
-    // const assets = response.filter(asset => asset.total > 0)
-    return NextResponse.json({ success: true, d}, { status: 200 });
+    const assets = d?.balances?.filter(
+      (asset) => parseInt(asset.free) + parseInt(asset.locked) > 0
+    );
+    return NextResponse.json({ success: true, assets }, { status: 200 });
   } catch (error) {
     if (!error.response)
       return NextResponse.json(

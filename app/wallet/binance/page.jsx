@@ -200,8 +200,8 @@ export default function FullWidthTabs() {
                             <CoinData
                               key={coin.asset + idx}
                               symbol={coin.asset}
-                              amount={parseFloat(coin.balance).toFixed(3)}
-                              inOrder={(parseFloat(coin.balance) - parseFloat(coin.availableBalance)).toFixed(3)}
+                              amount={parseFloat(coin.walletBalance).toFixed(3)}
+                              inOrder={(parseFloat(coin.walletBalance) - parseFloat(coin.availableBalance)).toFixed(3)}
                             />
                           );
                         })}

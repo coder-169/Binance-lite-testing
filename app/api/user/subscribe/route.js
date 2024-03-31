@@ -88,7 +88,7 @@ export async function POST(req, res) {
       const ex = new ccxt.binance({
         apiKey,
         secret: secretKey,
-        enableRateLimit: true,
+        enableRateLimit: false,
         options: {
           adjustForTimeDifference: true,
         },
