@@ -45,8 +45,8 @@ export async function POST(req, res) {
             const ex = new ccxt.bybit({
                 apiKey, secret: secretKey, enableRateLimit: true, urls: {
                     api: {
-                        public: 'https://api-testnet.bybit.com',
-                        private: 'https://api-testnet.bybit.com',
+                        public: 'https://api.bybit.com',
+                        private: 'https://api.bybit.com',
                     },
                 },
             })

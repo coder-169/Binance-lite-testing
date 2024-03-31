@@ -2,7 +2,6 @@
 // const BASE_URL = 'https://fapi.binance.com'
 
 import dbConnect from '@/app/helpers/db';
-import { isAuthenticated } from '@/app/helpers/functions';
 import User from '@/app/models/User';
 import crypto from 'crypto';
 import { headers } from 'next/headers';

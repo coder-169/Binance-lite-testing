@@ -57,7 +57,7 @@ const Page = () => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
   useEffect(() => {
-    if (Object.keys(user).length > 0 && localStorage.getItem("auth-token")) {
+    if (Object.keys(user).length > 0 || localStorage.getItem("auth-token")) {
       router.push("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

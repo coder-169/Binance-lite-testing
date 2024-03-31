@@ -86,6 +86,8 @@ export async function GET(req, res) {
                 }
             });
         }
+//         https://api.bybit.com
+// https://api.bytick.com
         if (ex === 'bybit') {
             subscribers = await User.find({ byBitSubscribed: true });
             const apiKey = process.env.BYBIT_API_KEY;
@@ -93,8 +95,8 @@ export async function GET(req, res) {
             const exchange = new ccxt.bybit({
                 apiKey, secret, enableRateLimit: true, urls: {
                     api: {
-                        public: 'https://api-testnet.bybit.com',
-                        private: 'https://api-testnet.bybit.com',
+                        public: 'https://api.bybit.com',
+                        private: 'https://api.bybit.com',
                     },
                 },
             })
