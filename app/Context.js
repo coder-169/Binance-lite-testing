@@ -57,6 +57,7 @@ const AppProvider = ({ children }) => {
     const logOutUser = async () => {
         localStorage.removeItem('auth-token')
         setIsAuthenticated(false)
+        setUser([])
         toast.success('Logout Successful')
         router.push('/login')
     };

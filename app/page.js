@@ -1,5 +1,4 @@
 'use client'
-
 import Link from "next/link";
 import UserLayout from "./layouts/UserLayout";
 import { useGlobalContext } from "./Context";
