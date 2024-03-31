@@ -5,8 +5,9 @@ import dbConnect from '@/app/helpers/db';
 import { isAuthenticated } from '@/app/helpers/functions';
 import User from '@/app/models/User';
 import crypto from 'crypto';
+import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-
+import jwt from "jsonwebtoken"
 
 function getSignature(data, secret) {
     return crypto.createHmac('sha256', secret).update(data).digest('hex');
@@ -53,6 +54,7 @@ export async function GET(req, res) {
         return NextResponse.json({ success: true, assets }, { status: 200 })
 
     } catch (error) {
+        console.log(error.message)
         return NextResponse.json({ success: false, error }, { status: 500 })
     }
 }
