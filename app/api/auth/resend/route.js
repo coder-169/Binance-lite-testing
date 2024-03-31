@@ -1,4 +1,4 @@
-import { sendEmail } from "@/app/helpers/functions";
+import { generateCode, sendEmail } from "@/app/helpers/functions";
 import User from "@/app/models/User";
 import { NextResponse } from "next/server";
 
