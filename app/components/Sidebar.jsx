@@ -14,6 +14,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Fade from "@mui/material/Fade";
+import { FaUsers } from "react-icons/fa6";
 
 const Sidebar = () => {
   const [menu, setMenu] = useState(false);
@@ -57,6 +58,15 @@ const Sidebar = () => {
             >
               {" "}
               <HomeRoundedIcon /> Home
+            </Link>
+          </li>
+          <li className="my-4">
+            <Link
+              className="flex px-8 transition-all duration-200 py-4 gap-4 hover:bg-gray-100"
+              href="/"
+            >
+              {" "}
+              <FaUsers className="text-2xl" /> Users
             </Link>
           </li>
           <li className="my-4">

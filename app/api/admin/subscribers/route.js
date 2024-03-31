@@ -5,11 +5,14 @@ import { Spot } from "@binance/connector"
 import ccxt from "ccxt"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
+import jwt from "jsonwebtoken"
 export async function GET(req, res) {
     try {
         await dbConnect()
         const headerList = headers()
+        // console.log(token)
         const token = headerList.get('token')
+        console.log(token)
         if (!token)
             return NextResponse.json({ success: false, message: "invalid authorization! please login again" }, { status: 401 })
         const data = jwt.verify(token, process.env.JWT_SECRET)
