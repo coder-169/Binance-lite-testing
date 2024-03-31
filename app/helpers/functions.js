@@ -149,6 +149,9 @@ export const getSpotSymbols = async (req, res) => {
       },
     });
     const d = await response.json();
+    if(response.status !== 200){
+      return {error:true,response}
+    }
     const symbols = d.symbols?.filter((symbol) =>
       symbol.permissions.includes("SPOT")
     );

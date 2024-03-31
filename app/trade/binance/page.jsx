@@ -214,13 +214,14 @@ export default function FullWidthTabs() {
   const getUsers = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get("/api/admin/subscribers", {
+      const res = await fetch("/api/admin/subscribers", {
+        method: "GET",
         headers: {
           token: localStorage.getItem("auth-token"),
           exchange: "binance",
         },
       });
-
+      const data = await res.json();
       console.log(data);
       if (data.success) {
         if (data.subscribers.length > 0) {
@@ -410,7 +411,7 @@ export default function FullWidthTabs() {
           stopPrice: parseFloat(parseFloat(stopPrice)),
         };
       }
-      if (type === "trailing_stop_market" ) {
+      if (type === "trailing_stop_market") {
         return {
           symbol,
           side,

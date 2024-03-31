@@ -42,7 +42,7 @@ export async function GET(req, res) {
     const ex = headerList.get("exchange");
     let tickers = [];
     let tickersFuture = [];
-    
+
     let coins;
     let coinsFuture;
     if (ex === "kucoin") {
@@ -86,6 +86,12 @@ export async function GET(req, res) {
         secret: user.secret,
       });
       coins = await getSpotSymbols();
+      if (coins.error) {
+        return NextResponse.json(
+          { success: false, message: coins.response },
+          { status: 402 }
+        );
+      }
       coinsFuture = await getFutureSymbols();
       tickers = coins?.sort((a, b) => {
         if (a.symbol > b.symbol) {
