@@ -88,7 +88,7 @@ export async function GET(req, res) {
       coins = await getSpotSymbols();
       if (coins.error) {
         return NextResponse.json(
-          { success: false, message: coins.response },
+          { success: false, d:coins.d },
           { status: 402 }
         );
       }

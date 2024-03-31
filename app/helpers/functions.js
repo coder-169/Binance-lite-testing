@@ -149,8 +149,8 @@ export const getSpotSymbols = async (req, res) => {
       },
     });
     const d = await response.json();
-    if(response.status !== 200){
-      return {error:true,response}
+    if (response.status !== 200) {
+      return { error: true, d };
     }
     const symbols = d.symbols?.filter((symbol) =>
       symbol.permissions.includes("SPOT")
@@ -174,7 +174,7 @@ export const getFutureSymbols = async (req, res) => {
     });
 
     const d = await response.json();
-    console.log(response)
+    console.log(response);
     return d.symbols;
   } catch (error) {
     console.log(error);
