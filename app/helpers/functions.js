@@ -171,6 +171,7 @@ export const getFutureSymbols = async (req, res) => {
     });
 
     const d = await response.json();
+    console.log(response)
     return d.symbols;
   } catch (error) {
     console.log(error);
@@ -194,21 +195,8 @@ function generateTimestamp(serverTime, recvWindow) {
 export const createSpotOrder = async (params, api, secret) => {
   try {
     const serverTime = await getServerTime();
-    console.log(serverTime);
-    var recvWindow = 60000; // Maximum recvWindow value
-    var tm = generateTimestamp(serverTime, recvWindow);
-    params.timestamp = serverTime - 10000 ;
-    console.log(params.timestamp);
-    // const params = {
-    //   symbol: body.symbol,
-    //   side: body.side,
-    //   type: body.type,
-    //   quantity: body.quantity,
-    //   price: body.price,
-    //   timeInForce: "GTC",
-    //   timestamp: serverTime - 1000,
-    // };
-
+    var recvWindow = 2000; // Maximum recvWindow value
+    params.timestamp = serverTime - recvWindow;
     let query = Object.keys(params)
       .map((key) => `${key}=${encodeURIComponent(params[key])}`)
       .join("&");
@@ -229,7 +217,47 @@ export const createSpotOrder = async (params, api, secret) => {
     });
     // console.log(response)
     const data = await response.json();
-    return { data, error: true };
+    console.log(response.status);
+    if (response.status === 200) {
+      return { data, error: false };
+    } else {
+      return { message: data.message, error: true };
+    }
+  } catch (error) {
+    return { error: true, message: error.message };
+  }
+};
+export const createFutureOrder = async (params, api, secret) => {
+  try {
+    const serverTime = await getServerTime();
+    var recvWindow = 2000; // Maximum recvWindow value
+    params.timestamp = serverTime - recvWindow;
+    let query = Object.keys(params)
+      .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+      .join("&");
+    console.log(query, secret);
+    const signature = crypto
+      .createHmac("sha256", secret)
+      .update(query)
+      .digest("hex");
+    query += `&signature=${signature}`;
+    const url = "https://fapi.binance.com/fapi/v1/order?" + query;
+    console.log(url);
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "X-MBX-APIKEY": api,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+    // console.log(response)
+    const data = await response.json();
+    console.log(data);
+    if (response.status === 200) {
+      return { data, error: false };
+    } else {
+      return { message: data.message, error: true };
+    }
   } catch (error) {
     return { error: true, message: error.message };
   }

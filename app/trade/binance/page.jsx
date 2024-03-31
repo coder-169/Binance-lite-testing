@@ -234,6 +234,7 @@ export default function FullWidthTabs() {
         toast.error(data.message);
       }
     } catch (error) {
+      console.log(error);
       toast.error(error.message);
     }
     setLoading(false);
@@ -367,50 +368,103 @@ export default function FullWidthTabs() {
       leverage,
     } = order;
     if (symbol === "" || side === "" || type === "") return {};
-    if (type === "limit") {
-      return {
-        symbol,
-        side: side.toUpperCase(),
-        type: type.toUpperCase(),
+    if (trs[value] === "future") {
+      if (type === "limit") {
+        return {
+          symbol,
+          side: side.toUpperCase(),
+          type: type.toUpperCase(),
+          timeInForce: "GTC",
+          quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+          price: parseFloat(parseFloat(price)),
+        };
+      }
+      if (type === "market") {
+        return {
+          symbol,
+          side: side.toUpperCase(),
+          type: type.toUpperCase(),
+          quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+        };
+      }
+      if (type === "stop" || type === "take_profit") {
+        return {
+          symbol,
+          side: side.toUpperCase(),
+          type: type.toUpperCase(),
+          quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+          price: parseFloat(parseFloat(price)),
+          stopPrice: parseFloat(parseFloat(stopPrice)),
+        };
+        // quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+        // price: parseFloat(parseFloat(price)),
+        // stopPrice: parseFloat(parseFloat(stopPrice)),
+        // quoteOrderQty: parseFloat(parseFloat(quoteOrderQty).toFixed(3)),
+        // leverage: parseFloat(leverage),
+      }
+      if (type === "stop_market" || type === "take_profit_market") {
+        return {
+          symbol,
+          side,
+          type,
+          stopPrice: parseFloat(parseFloat(stopPrice)),
+        };
+      }
+      if (type === "trailing_stop_market" ) {
+        return {
+          symbol,
+          side,
+          type,
+          quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+          callbackRate: parseFloat(parseFloat(callbackRate)),
+        };
+      }
+    } else {
+      if (type === "limit") {
+        return {
+          symbol,
+          side: side.toUpperCase(),
+          type: type.toUpperCase(),
 
-        timeInForce: "GTC",
-        quantity: parseFloat(parseFloat(quantity).toFixed(3)),
-        price: parseFloat(parseFloat(price)),
-      };
-    }
-    if (type === "market") {
-      return {
-        symbol,
-        side: side.toUpperCase(),
-        type: type.toUpperCase(),
+          timeInForce: "GTC",
+          quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+          price: parseFloat(parseFloat(price)),
+        };
+      }
+      if (type === "market") {
+        return {
+          symbol,
+          side: side.toUpperCase(),
+          type: type.toUpperCase(),
 
-        quantity: parseFloat(parseFloat(quantity).toFixed(3)),
-      };
-    }
-    if (type === "stop_loss" || type === "take_profit") {
-      return {
-        symbol,
-        side: side.toUpperCase(),
-        type: type.toUpperCase(),
-        quantity: parseFloat(parseFloat(quantity).toFixed(3)),
-        stopPrice: parseFloat(parseFloat(stopPrice)),
-      };
-      // quantity: parseFloat(parseFloat(quantity).toFixed(3)),
-      // price: parseFloat(parseFloat(price)),
-      // stopPrice: parseFloat(parseFloat(stopPrice)),
-      // quoteOrderQty: parseFloat(parseFloat(quoteOrderQty).toFixed(3)),
-      // leverage: parseFloat(leverage),
-    }
-    if (type === "stop_loss_limit" || type === "take_profit_limit") {
-      return {
-        symbol,
-        side,
-        type,
-        timeInForce: "GTC",
-        quantity: parseFloat(parseFloat(quantity).toFixed(3)),
-        price: parseFloat(parseFloat(price)),
-        stopPrice: parseFloat(parseFloat(stopPrice)),
-      };
+          quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+        };
+      }
+      if (type === "stop_loss" || type === "take_profit") {
+        return {
+          symbol,
+          side: side.toUpperCase(),
+          type: type.toUpperCase(),
+          quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+          stopPrice: parseFloat(parseFloat(stopPrice)),
+        };
+        // quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+        // price: parseFloat(parseFloat(price)),
+        // stopPrice: parseFloat(parseFloat(stopPrice)),
+        // quoteOrderQty: parseFloat(parseFloat(quoteOrderQty).toFixed(3)),
+        // leverage: parseFloat(leverage),
+      }
+      if (type === "stop_loss_limit" || type === "take_profit_limit") {
+        return {
+          symbol,
+          side,
+          type,
+          timeInForce: "GTC",
+          quantity: parseFloat(parseFloat(quantity).toFixed(3)),
+          price: parseFloat(parseFloat(price)),
+          stopPrice: parseFloat(parseFloat(stopPrice)),
+        };
+      }
     }
   };
   const orderHandler = async (e) => {

@@ -42,6 +42,9 @@ export async function GET(req, res) {
     const ex = headerList.get("exchange");
     let tickers = [];
     let tickersFuture = [];
+    
+    let coins;
+    let coinsFuture;
     if (ex === "kucoin") {
       subscribers = await User.find({ kuCoinSubscribed: true });
       const exc = new ccxt.kucoin({
@@ -75,8 +78,6 @@ export async function GET(req, res) {
         }
       });
     }
-    let coins;
-    let coinsFuture;
     if (ex === "binance") {
       subscribers = await User.find({ binanceSubscribed: true });
 
@@ -86,7 +87,7 @@ export async function GET(req, res) {
       });
       coins = await getSpotSymbols();
       coinsFuture = await getFutureSymbols();
-      tickers = coins.sort((a, b) => {
+      tickers = coins?.sort((a, b) => {
         if (a.symbol > b.symbol) {
           return 1;
         } else if (a.symbol < b.symbol) {
@@ -96,7 +97,7 @@ export async function GET(req, res) {
         }
       });
 
-      tickersFuture = coinsFuture.sort((a, b) => {
+      tickersFuture = coinsFuture?.sort((a, b) => {
         if (a.symbol > b.symbol) {
           return 1;
         } else if (a.symbol < b.symbol) {

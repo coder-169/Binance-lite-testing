@@ -105,23 +105,6 @@ export async function POST(req, res) {
           { status: 400 }
         );
       }
-      //   const client = new Spot(
-      //     "i4xx1s5DmiWpbIhGhDejz55A7rHy8Ei9sKxHo6Z7o2UHvIzITtgsUdCa0zYbTJyR",
-      //     "LpffHUiQZ1smRR39d68mMzdvaMcM6SPyMgPPxWry2chfsBOmV5q36FYf2KdpdHYm",
-      //     { baseURL: "https://testnet.binance.vision" }
-      //   );
-      //   // const client = new Spot(user.binanceApiKey, user.binanceSecretKey,{ baseURL: "https://testnet.binance.vision"})
-      //   const { symbol, type, side } = body;
-      //   const options = await makeOptions(body);
-
-      //   const params = {};
-      //   const response = await client.newOrder(symbol, side, type, options);
-      //   console.log(response);
-      //   if (response.status !== 200)
-      //     return NextResponse.json(
-      //       { success: false, message: response.statusText, res },
-      //       { status: 200 }
-      //     );
     }
     return NextResponse.json(
       { success: true, message: "order created successfully", order },
