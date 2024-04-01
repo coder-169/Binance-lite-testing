@@ -265,3 +265,39 @@ export const createFutureOrder = async (params, api, secret) => {
     return { error: true, message: error.message };
   }
 };
+
+export const createByBitSpotOrder = async (params, api, secret) => {
+  try {
+    var recvWindow = 5000; // Maximum recvWindow value
+    const timestamp = (Date.now() - recvWindow).toString();
+    const string = timestamp + api + recvWindow + params;
+    const sign = crypto
+      .createHmac("sha256", secret)
+      .update(string)
+      .digest("hex");
+    var headers = {
+      "X-BAPI-SIGN-TYPE": "2",
+      "X-BAPI-SIGN": sign,
+      "X-BAPI-API-KEY": api,
+      "X-BAPI-TIMESTAMP": timestamp,
+      "X-BAPI-RECV-WINDOW": recvWindow.toString(),
+      "Content-Type": "application/json; charset=utf-8",
+    };
+    const url = "https://api-testnet.bybit.com/v2/private/order/create";
+    console.log(url);
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+    });
+    // console.log(response)
+    const data = await response.json();
+    console.log(data);
+    if (response.status === 200) {
+      return { data, error: false };
+    } else {
+      return { message: data.message, error: true };
+    }
+  } catch (error) {
+    return { error: true, message: error.message };
+  }
+};

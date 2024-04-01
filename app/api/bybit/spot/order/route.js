@@ -1,5 +1,5 @@
 import dbConnect from "@/app/helpers/db";
-import { isAuthenticated } from "@/app/helpers/functions";
+import { createByBitSpotOrder, isAuthenticated } from "@/app/helpers/functions";
 import User from "@/app/models/User";
 import { Spot } from "@binance/connector";
 import jwt from "jsonwebtoken";
@@ -100,8 +100,8 @@ export async function POST(req, res) {
           enableRateLimit: true,
           urls: {
             api: {
-              public: 'https://api.bybit.com',
-              private: 'https://api.bybit.com',
+              public: "https://api.bybit.com",
+              private: "https://api.bybit.com",
             },
           },
         });
@@ -121,30 +121,41 @@ export async function POST(req, res) {
         );
       // const apiKey = '80fNrSDmS1TJTZK7IA';
       // const secret = '1TBrzDsfe39yRaviJs2O2pJDEBFDyIZV8P3Y';
-      const apiKey = process.env.BYBIT_API_KEY;
-      const secret = process.env.BYBIT_SECRET_KEY;
-      const exchange = new ccxt.bybit({
-        apiKey,
-        secret,
-        enableRateLimit: true,
-        urls: {
-          api: {
-            public: 'https://api.bybit.com',
-            private: 'https://api.bybit.com',
-          },
-        },
-      });
-      const { symbol, type, side, quantity, price } = body;
-      console.log(symbol, type, side, quantity, price);
-      body.category = "spot";
-      const order = await exchange.createOrder(
-        symbol,
-        type,
-        side,
-        quantity,
-        price,
-        { category: "spot" }
-      );
+      const params = {
+        category: "spot",
+        symbol: "BTCUSDT",
+        side: "Buy",
+        positionIdx: 0,
+        orderType: "Limit",
+        qty: "0.001",
+        price: "10000",
+        timeInForce: "GTC",
+      };
+      const order= await createByBitSpotOrder(params, user.byBitApiKey, user.byBitSecretKey);
+      // const apiKey = process.env.BYBIT_API_KEY;
+      // const secret = process.env.BYBIT_SECRET_KEY;
+      // const exchange = new ccxt.bybit({
+      //   apiKey,
+      //   secret,
+      //   enableRateLimit: true,
+      //   urls: {
+      //     api: {
+      //       public: "https://api.bybit.com",
+      //       private: "https://api.bybit.com",
+      //     },
+      //   },
+      // });
+      // const { symbol, type, side, quantity, price } = body;
+      // console.log(symbol, type, side, quantity, price);
+      // body.category = "spot";
+      // const order = await exchange.createOrder(
+      //   symbol,
+      //   type,
+      //   side,
+      //   quantity,
+      //   price,
+      //   { category: "spot" }
+      // );
       // const order = await exchange.createOrder(symbol, type, side, amount, price, {category:"spot"});
     }
     return NextResponse.json(
