@@ -46,7 +46,7 @@ ValueLabelComponent.propTypes = {
 const iOSBoxShadow =
   "0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)";
 
-const trades = ["market", "limit", "stop_loss", "take_profit",];
+const trades = ["market", "limit", "stop_loss", "take_profit"];
 const sides = ["buy", "sell"];
 
 const futureTrades = ["market", "limit", "stop_loss", "take_profit"];
@@ -113,7 +113,7 @@ export default function FullWidthTabs() {
       user: "",
       stopPrice: "",
       price: "",
-      callbackRate: ''
+      callbackRate: "",
     });
     setValue(newValue);
   };
@@ -136,8 +136,12 @@ export default function FullWidthTabs() {
   });
   const [users, setUsers] = useState();
   const handleChange = (e) => {
-    if (e.target.name === 'type' && e.target.value === 'market' && order.symbol !== '') {
-      tickerPriceFounder(order.symbol)
+    if (
+      e.target.name === "type" &&
+      e.target.value === "market" &&
+      order.symbol !== ""
+    ) {
+      tickerPriceFounder(order.symbol);
     }
     if (e.target.name === "price" && e.target.value !== "") {
       setOrder({
@@ -166,11 +170,11 @@ export default function FullWidthTabs() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'mark': 'spot'
+        mark: "spot",
       },
       body: JSON.stringify({ ticker: value }),
     });
-    console.log(response)
+    console.log(response);
     const data = await response.json();
     if (data.success) {
       let price = parseFloat(data.tickerPrice);
@@ -188,12 +192,12 @@ export default function FullWidthTabs() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'mark': 'future'
+        mark: "future",
       },
       body: JSON.stringify({ ticker: e.target.value }),
     });
     const data = await response.json();
-    console.log(data)
+    console.log(data);
     if (data.success) {
       let price = parseFloat(data.tickerPrice);
       setTickerPrice(price);
@@ -213,7 +217,7 @@ export default function FullWidthTabs() {
       console.log(data);
       if (data.success) {
         if (data.subscribers.length > 0) {
-          const newArray = [...data.subscribers, { username: "All" }]
+          const newArray = [...data.subscribers, { username: "All" }];
           setUsers(newArray);
         }
         setCoins(data.tickers);
@@ -283,11 +287,11 @@ export default function FullWidthTabs() {
     //   body = { ...order, ...options, type: tmp.split("_")[1] };
     // } else {
     body = { ...order, ...options };
-    if (type === 'stop_loss') {
-      body = { ...body, slLimitPrice: body.price, stopLoss: body.stopPrice }
+    if (type === "stop_loss") {
+      body = { ...body, slLimitPrice: body.price, stopLoss: body.stopPrice };
     }
-    if (type === 'take_profit') {
-      body = { ...body, tpLimitPrice: body.price, takeProfit: body.stopPrice }
+    if (type === "take_profit") {
+      body = { ...body, tpLimitPrice: body.price, takeProfit: body.stopPrice };
     }
     // }
     try {
@@ -297,12 +301,12 @@ export default function FullWidthTabs() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          token:localStorage.getItem('auth-token')
+          token: localStorage.getItem("auth-token"),
         },
         body: JSON.stringify(body),
       });
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       if (data.success) {
         toast.success(data.message);
         setOrder({
@@ -408,7 +412,9 @@ export default function FullWidthTabs() {
                                   label="Symbol"
                                   name="symbol"
                                   value={order.symbol}
-                                  onChange={(e) => tickerPriceFounder(e.target.value)}
+                                  onChange={(e) =>
+                                    tickerPriceFounder(e.target.value)
+                                  }
                                 >
                                   {coins?.map((symb, idx) => {
                                     return (
@@ -422,7 +428,11 @@ export default function FullWidthTabs() {
                                   })}
                                 </Select>
                               </FormControl>
-                              {tickerPrice ? <small className="text-xs">{tickerPrice}</small> : ""}
+                              {tickerPrice ? (
+                                <small className="text-xs">{tickerPrice}</small>
+                              ) : (
+                                ""
+                              )}
                             </div>
                             <div className="w-full text-left hidden sm:block mb-4 sm:my-8">
                               <TextField
@@ -443,8 +453,9 @@ export default function FullWidthTabs() {
                                 className="!text-white w-3/5 !border-white"
                                 id="quantity"
                                 name="quantity"
-                                label={`Quantity(${order.symbol !== "" ? order.symbol : "Coin"
-                                  })`}
+                                label={`Quantity(${
+                                  order.symbol !== "" ? order.symbol : "Coin"
+                                })`}
                                 value={order.quantity}
                                 onChange={specialHandler}
                                 autoComplete="off"
@@ -517,48 +528,47 @@ export default function FullWidthTabs() {
                             )}
                             {(order.type === "stop_loss" ||
                               order.type === "take_profit") && (
-                                <div className="w-full mb-4 sm:mb-8">
-                                  <FormControl fullWidth>
-                                    <TextField
-                                      disabled={
-                                        order.symbol === "" ? true : false
-                                      }
-                                      className="!text-white text-center  !border-white"
-                                      id="stopPrice"
-                                      onChange={handleChange}
-                                      name="stopPrice"
-                                      label="Stop Price"
-                                      variant="outlined"
-                                      type="number"
-                                      value={order.stopPrice}
-                                      autoComplete="off"
-                                    />
-                                  </FormControl>
-                                </div>
-                              )}
+                              <div className="w-full mb-4 sm:mb-8">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    disabled={
+                                      order.symbol === "" ? true : false
+                                    }
+                                    className="!text-white text-center  !border-white"
+                                    id="stopPrice"
+                                    onChange={handleChange}
+                                    name="stopPrice"
+                                    label="Stop Price"
+                                    variant="outlined"
+                                    type="number"
+                                    value={order.stopPrice}
+                                    autoComplete="off"
+                                  />
+                                </FormControl>
+                              </div>
+                            )}
                             {(order.type === "limit" ||
                               order.type === "stop_loss" ||
-                              order.type === 'take_profit'
-                            ) && (
-                                <div className="w-full mb-4 sm:mb-8">
-                                  <FormControl fullWidth>
-                                    <TextField
-                                      disabled={
-                                        order.symbol === "" ? true : false
-                                      }
-                                      className="!text-white text-center  !border-white"
-                                      id="price"
-                                      name="price"
-                                      label="Price"
-                                      variant="outlined"
-                                      onChange={handleChange}
-                                      type="number"
-                                      autoComplete="off"
-                                      value={order.price}
-                                    />
-                                  </FormControl>
-                                </div>
-                              )}
+                              order.type === "take_profit") && (
+                              <div className="w-full mb-4 sm:mb-8">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    disabled={
+                                      order.symbol === "" ? true : false
+                                    }
+                                    className="!text-white text-center  !border-white"
+                                    id="price"
+                                    name="price"
+                                    label="Price"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    type="number"
+                                    autoComplete="off"
+                                    value={order.price}
+                                  />
+                                </FormControl>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="sm:w-1/2 w-full flex  gap-8">
@@ -581,8 +591,9 @@ export default function FullWidthTabs() {
                               className="!text-white w-full !border-white"
                               id="quantity"
                               name="quantity"
-                              label={`Quantity(${order.symbol !== "" ? order.symbol : "Coin"
-                                })`}
+                              label={`Quantity(${
+                                order.symbol !== "" ? order.symbol : "Coin"
+                              })`}
                               value={order.quantity}
                               onChange={specialHandler}
                               autoComplete="off"
@@ -671,7 +682,11 @@ export default function FullWidthTabs() {
                                   })}
                                 </Select>
                               </FormControl>
-                              {tickerPrice ? <small className="text-xs">{tickerPrice}</small> : ""}
+                              {tickerPrice ? (
+                                <small className="text-xs">{tickerPrice}</small>
+                              ) : (
+                                ""
+                              )}
                             </div>
                             <div className="w-full text-left hidden sm:block mb-2 sm:my-4">
                               <TextField
@@ -692,8 +707,9 @@ export default function FullWidthTabs() {
                                 className="!text-white w-3/5 !border-white"
                                 id="quantity"
                                 name="quantity"
-                                label={`Quantity(${order.symbol !== "" ? order.symbol : "Coin"
-                                  })`}
+                                label={`Quantity(${
+                                  order.symbol !== "" ? order.symbol : "Coin"
+                                })`}
                                 value={order.quantity}
                                 onChange={specialHandler}
                                 autoComplete="off"
@@ -781,25 +797,25 @@ export default function FullWidthTabs() {
                             )}
                             {(order.type === "stop_loss" ||
                               order.type === "take_profit") && (
-                                <div className="w-full mb-4 sm:mb-8">
-                                  <FormControl fullWidth>
-                                    <TextField
-                                      disabled={
-                                        order.symbol === "" ? true : false
-                                      }
-                                      className="!text-white text-center  !border-white"
-                                      id="stopPrice"
-                                      onChange={handleChange}
-                                      name="stopPrice"
-                                      label="Stop Price"
-                                      variant="outlined"
-                                      type="number"
-                                      value={order.stopPrice}
-                                      autoComplete="off"
-                                    />
-                                  </FormControl>
-                                </div>
-                              )}
+                              <div className="w-full mb-4 sm:mb-8">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    disabled={
+                                      order.symbol === "" ? true : false
+                                    }
+                                    className="!text-white text-center  !border-white"
+                                    id="stopPrice"
+                                    onChange={handleChange}
+                                    name="stopPrice"
+                                    label="Stop Price"
+                                    variant="outlined"
+                                    type="number"
+                                    value={order.stopPrice}
+                                    autoComplete="off"
+                                  />
+                                </FormControl>
+                              </div>
+                            )}
                             {/* {order.type === "TRAILING_STOP_MARKET" && (
                               <div className="w-full mb-4 sm:mb-8">
                                 <FormControl fullWidth>
@@ -822,27 +838,26 @@ export default function FullWidthTabs() {
                             )} */}
                             {(order.type === "limit" ||
                               order.type === "stop_loss" ||
-                              order.type === "take_profit"
-                            ) && (
-                                <div className="w-full mb-4 sm:mb-8">
-                                  <FormControl fullWidth>
-                                    <TextField
-                                      disabled={
-                                        order.symbol === "" ? true : false
-                                      }
-                                      className="!text-white text-center  !border-white"
-                                      id="price"
-                                      name="price"
-                                      label="Price"
-                                      variant="outlined"
-                                      onChange={handleChange}
-                                      type="number"
-                                      autoComplete="off"
-                                      value={order.price}
-                                    />
-                                  </FormControl>
-                                </div>
-                              )}
+                              order.type === "take_profit") && (
+                              <div className="w-full mb-4 sm:mb-8">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    disabled={
+                                      order.symbol === "" ? true : false
+                                    }
+                                    className="!text-white text-center  !border-white"
+                                    id="price"
+                                    name="price"
+                                    label="Price"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    type="number"
+                                    autoComplete="off"
+                                    value={order.price}
+                                  />
+                                </FormControl>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="sm:w-1/2 w-full flex gap-8">
@@ -865,8 +880,9 @@ export default function FullWidthTabs() {
                               className="!text-white w-full !border-white"
                               id="quantity"
                               name="quantity"
-                              label={`Quantity(${order.symbol !== "" ? order.symbol : "Coin"
-                                })`}
+                              label={`Quantity(${
+                                order.symbol !== "" ? order.symbol : "Coin"
+                              })`}
                               value={order.quantity}
                               onChange={specialHandler}
                               autoComplete="off"
