@@ -86,6 +86,7 @@ export async function POST(req, res) {
 
     const body = await req.json();
     const users = body.user;
+    const order = null;
     if (users === "All") {
       const userArray = await User.find({ byBitSubscribed: true }).select(
         "-password"
@@ -182,7 +183,7 @@ export async function POST(req, res) {
         } else {
           newType = "market";
         }
-        const order = await exchange.createOrder(
+        order = await exchange.createOrder(
           symbol,
           newType,
           side,
@@ -192,22 +193,36 @@ export async function POST(req, res) {
         );
         console.log(order);
       }
-      const order = await exchange.createOrder(
-        symbol,
-        type,
-        side,
-        quantity,
-        price,
-        { category: "spot", }
-      );
-      console.log(order);
+      if (type === "market") {
+        order = await exchange.createOrder(symbol, type, side, quantity, {
+          category: "spot",
+        });
+      } else {
+        order = await exchange.createOrder(
+          symbol,
+          type,
+          side,
+          quantity,
+          price,
+          { category: "spot" }
+        );
+      }
+
+      if (!order) {
+        return NextResponse.json(
+          { success: false, message: "order not created" },
+          { status: 400 }
+        );
+      }
     }
     return NextResponse.json(
       { success: true, message: "order created successfully" },
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
-    return NextResponse.json({ success: false, error }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
   }
 }
