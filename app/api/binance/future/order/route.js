@@ -69,7 +69,7 @@ export async function POST(req, res) {
     const headerList = headers();
     await dbConnect();
     const token = headerList.get("token");
-    let order = null
+    let order = null;
     if (!token)
       return NextResponse.json(
         {
@@ -78,7 +78,7 @@ export async function POST(req, res) {
         },
         { status: 401 }
       );
-    const users = headerList.get('user');
+    const users = headerList.get("user");
     if (users === "All") {
       const userArray = await User.find({ binanceSubscribed: true }).select(
         "-password"
@@ -100,17 +100,24 @@ export async function POST(req, res) {
           { stopPrice, leverage }
         );
       }
-    } else {
-      const user = await User.findOne({ username: users }).select(
-        "-password"
+      return NextResponse.json(
+        { success: true, message: "orders created successfully" },
+        { status: 200 }
       );
+
+    } else {
+      const user = await User.findOne({ username: users }).select("-password");
       // const exfuture = new ccxt.binanceusdm({
       //   apiKey: user.binanceApiKey,
       //   secret: user.binanceSecretKey,
       // });
       // const { symbol, leverage, price, stopPrice, quantity, side, type } = body;
-      console.log(user,body)
-      order = await createFutureOrder(body, user.binanceApiKey, user.binanceSecretKey);
+      console.log(user, body);
+      order = await createFutureOrder(
+        body,
+        user.binanceApiKey,
+        user.binanceSecretKey
+      );
       console.log(order);
       if (order.error) {
         return NextResponse.json(
@@ -118,16 +125,8 @@ export async function POST(req, res) {
           { status: 400 }
         );
       }
-      // const ord = await exfuture.createOrder(
-      //   symbol,
-      //   type,
-      //   side,
-      //   quantity,
-      //   price,
-      //   { stopPrice, leverage }
-      // );
       return NextResponse.json(
-        { success: true, message: "order created successfully", ord },
+        { success: true, message: "order created successfully" },
         { status: 200 }
       );
     }

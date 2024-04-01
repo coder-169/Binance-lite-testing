@@ -297,6 +297,7 @@ export default function FullWidthTabs() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          token:localStorage.getItem('auth-token')
         },
         body: JSON.stringify(body),
       });

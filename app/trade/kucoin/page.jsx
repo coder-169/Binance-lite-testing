@@ -136,7 +136,7 @@ export default function FullWidthTabs() {
     price: "",
     leverage: 1,
   });
-  const [users, setUsers] = useState();
+  const [users, setUsers] = useState([]);
   const handleChange = (e) => {
     if (e.target.name === "price" && e.target.value !== "") {
       setOrder({
@@ -216,9 +216,9 @@ export default function FullWidthTabs() {
           const newArray = [...data.subscribers, { username: "All" }]
           console.log(newArray)
           setUsers(newArray);
+          setCoins(data.tickers);
+          setFutureCoins(data.tickersFuture);
         }
-        setCoins(data.tickers);
-        setFutureCoins(data.tickersFuture);
       } else {
         toast.error(data.message);
       }
@@ -227,47 +227,7 @@ export default function FullWidthTabs() {
     }
     setLoading(false);
   };
-  // const dispatchOrder = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const { type, side, symbol, user, amount } = order;
-  //     if (type === "" || side === "" || symbol === "" || amount === "") {
-  //       setLoading(false);
-  //       return toast.error("please enter all fields");
-  //     }
-
-  //     let url = "/api/binance/spot/order";
-  //     console.log(value);
-  //     console.log(JSON.stringify(order));
-  //     return;
-  //     const response = await fetch(url, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(order),
-  //     });
-  //     const data = await response.json();
-  //     if (data.success) {
-  //       toast.success(data.message);
-  //       setOrder({
-  //         symbol: "",
-  //         quantity: "",
-  //         type: "",
-  //         quoteOrderQty: "",
-  //         side: "",
-  //         user: "",
-  //         stopPrice: "",
-  //         price: "",
-  //       });
-  //     } else {
-  //       toast.error(data.message);
-  //     }
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //   }
-  //   setLoading(false);
-  // };
+ 
   const specialHandler = (e) => {
     if (order.price !== "") {
       if (e.target.name === "quantity")
@@ -311,7 +271,7 @@ export default function FullWidthTabs() {
       leverage: parseFloat(leverage),
     };
   };
-  // const handleExchange = async (e) => {
+ 
   //   try {
   //     setLoading(true);
   //     setOrder({
@@ -435,14 +395,14 @@ export default function FullWidthTabs() {
                 <Loader />
               ) : (
                 <div className="w-4/5 mx-auto mt-4">
-                  {!loading && users?.length === 0 ? (
+                  {(users?.length <= 0) ? (
                     <div className="h-[50vh] flex items-center justify-center">
                       <h3 className="text-2xl text-gray-600 font-medium">
                         No Subscribers to Start trade
                       </h3>
                     </div>
                   ) : (
-                    users && (
+                    users?.length > 0 && (
                       <form onSubmit={orderHandler} className="mt-4 w-full">
                         <div className="flex sm:flex-row flex-col w-full gap-4 my-8">
                           <div className="w-full sm:w-1/2">

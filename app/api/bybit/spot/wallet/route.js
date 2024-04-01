@@ -28,7 +28,7 @@ export async function GET(req, res) {
         const apiKey = user.byBitApiKey;
         const secret = user.byBitSecretKey;
         const recvWindow = '5000';
-        const timestamp = Date.now().toString();
+        const timestamp = (Date.now() - 5000).toString();
         const parameters = {
             accountType: "UNIFIED"
         }
@@ -48,7 +48,7 @@ export async function GET(req, res) {
             },
         })
         const data = await resp.json();
-        console.log(data)
+        console.log(data.result.balance)
         const assets = data.result.balance.filter(asset => asset.walletBalance > 0)
         return NextResponse.json({ success: true, assets }, { status: 200 })
 

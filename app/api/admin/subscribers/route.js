@@ -47,112 +47,117 @@ export async function GET(req, res) {
     let coinsFuture;
     if (ex === "kucoin") {
       subscribers = await User.find({ kuCoinSubscribed: true });
-      const exc = new ccxt.kucoin({
-        apiKey: process.env.KU_KEY,
-        secret: process.env.KU_SECRET,
-        password: process.env.PARAPHRASE,
-      });
-      const excfuc = new ccxt.kucoinfutures({
-        apiKey: process.env.KU_KEY,
-        secret: process.env.KU_SECRET,
-        password: process.env.PARAPHRASE,
-      });
-      const resp = await exc.publicGetMarketAllTickers();
-      const respf = await excfuc.futuresPublicGetContractsActive();
-      tickers = resp.data.ticker.sort((a, b) => {
-        if (a.symbol > b.symbol) {
-          return 1;
-        } else if (a.symbol < b.symbol) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
-      tickersFuture = respf.data.sort((a, b) => {
-        if (a.symbol > b.symbol) {
-          return 1;
-        } else if (a.symbol < b.symbol) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
+      if (subscribers?.length > 0) {
+        const exc = new ccxt.kucoin({
+          apiKey: process.env.KU_KEY,
+          secret: process.env.KU_SECRET,
+          password: process.env.PARAPHRASE,
+        });
+        const excfuc = new ccxt.kucoinfutures({
+          apiKey: process.env.KU_KEY,
+          secret: process.env.KU_SECRET,
+          password: process.env.PARAPHRASE,
+        });
+        const resp = await exc.publicGetMarketAllTickers();
+        const respf = await excfuc.futuresPublicGetContractsActive();
+        tickers = resp.data.ticker.sort((a, b) => {
+          if (a.symbol > b.symbol) {
+            return 1;
+          } else if (a.symbol < b.symbol) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+        tickersFuture = respf.data.sort((a, b) => {
+          if (a.symbol > b.symbol) {
+            return 1;
+          } else if (a.symbol < b.symbol) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+      }
     }
     if (ex === "binance") {
       subscribers = await User.find({ binanceSubscribed: true });
+      if (subscribers?.length > 0) {
+        const ex = new ccxt.binance({
+          apiKey: user.api,
+          secret: user.secret,
+        });
+        coins = await getSpotSymbols();
+        if (coins.error) {
+          return NextResponse.json(
+            { success: false, d: coins.d },
+            { status: 402 }
+          );
+        }
+        coinsFuture = await getFutureSymbols();
+        tickers = coins?.sort((a, b) => {
+          if (a.symbol > b.symbol) {
+            return 1;
+          } else if (a.symbol < b.symbol) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
 
-      const ex = new ccxt.binance({
-        apiKey: user.api,
-        secret: user.secret,
-      });
-      coins = await getSpotSymbols();
-      if (coins.error) {
-        return NextResponse.json(
-          { success: false, d:coins.d },
-          { status: 402 }
-        );
+        tickersFuture = coinsFuture?.sort((a, b) => {
+          if (a.symbol > b.symbol) {
+            return 1;
+          } else if (a.symbol < b.symbol) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
       }
-      coinsFuture = await getFutureSymbols();
-      tickers = coins?.sort((a, b) => {
-        if (a.symbol > b.symbol) {
-          return 1;
-        } else if (a.symbol < b.symbol) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
-
-      tickersFuture = coinsFuture?.sort((a, b) => {
-        if (a.symbol > b.symbol) {
-          return 1;
-        } else if (a.symbol < b.symbol) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
     }
     if (ex === "bybit") {
       subscribers = await User.find({ byBitSubscribed: true });
-      const apiKey = process.env.BYBIT_API_KEY;
-      const secret = process.env.BYBIT_SECRET_KEY;
-      const exchange = new ccxt.bybit({
-        apiKey,
-        secret,
-        enableRateLimit: true,
-        urls: {
-          api: {
-            public: "https://api.bybit.com",
-            private: "https://api.bybit.com",
+      if (subscribers?.length > 0) {
+        const apiKey = process.env.BYBIT_API_KEY;
+        const secret = process.env.BYBIT_SECRET_KEY;
+        const exchange = new ccxt.bybit({
+          apiKey,
+          secret,
+          enableRateLimit: true,
+          urls: {
+            api: {
+              public: "https://api-testnet.bybit.com",
+              private: "https://api-testnet.bybit.com",
+            },
           },
-        },
-      });
-      const respp = await exchange.publicGetV5MarketTickers({
-        category: "spot",
-      });
-      const resp = await exchange.publicGetV5MarketTickers({
-        category: "linear",
-      });
-      coins = respp.result.list;
-      tickersFuture = resp.result.list.sort((a, b) => {
-        if (a.symbol > b.symbol) {
-          return 1;
-        } else if (a.symbol < b.symbol) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
-      tickers = coins.sort((a, b) => {
-        if (a.symbol > b.symbol) {
-          return 1;
-        } else if (a.symbol < b.symbol) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
+        });
+        const respp = await exchange.publicGetV5MarketTickers({
+          category: "spot",
+        });
+        const resp = await exchange.publicGetV5MarketTickers({
+          category: "linear",
+        });
+        coins = respp.result.list;
+        tickersFuture = resp.result.list.sort((a, b) => {
+          if (a.symbol > b.symbol) {
+            return 1;
+          } else if (a.symbol < b.symbol) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+        tickers = coins.sort((a, b) => {
+          if (a.symbol > b.symbol) {
+            return 1;
+          } else if (a.symbol < b.symbol) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+      }
     }
     return NextResponse.json(
       {

@@ -141,7 +141,7 @@ export default function FullWidthTabs() {
     price: "",
     leverage: 1,
   });
-  const [users, setUsers] = useState();
+  const [users, setUsers] = useState([]);
   const handleChange = (e) => {
     if (
       e.target.name === "type" &&
