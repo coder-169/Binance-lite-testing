@@ -194,7 +194,7 @@ export async function POST(req, res) {
       }
       const order = await exchange.createOrder(
         symbol,
-        newType,
+        type,
         side,
         quantity,
         price,
