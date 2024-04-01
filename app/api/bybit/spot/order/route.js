@@ -176,7 +176,7 @@ export async function POST(req, res) {
       );
     }
      return NextResponse.json(
-      { success: true, message: "order created successfully",order },
+      { success: true, message: "order created successfully" },
       { status: 200 }
     );
   } catch (error) {
