@@ -167,7 +167,7 @@ export async function POST(req, res) {
         console.log(order);
       }
       if (type === "market") {
-        order = await exchange.createOrder(symbol, type, side, quantity, {
+        order = await exchange.createOrder(symbol, type, side, quantity, 0, {
           category: "spot",
         });
       } else {
@@ -188,7 +188,7 @@ export async function POST(req, res) {
         );
       }
     }
-    console.log(order)
+    console.log(order);
     return NextResponse.json(
       { success: true, message: "order created successfully" },
       { status: 200 }
