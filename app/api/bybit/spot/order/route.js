@@ -198,7 +198,7 @@ export async function POST(req, res) {
         side,
         quantity,
         price,
-        { category: "spot", slLimitPrice, stopLoss }
+        { category: "spot", }
       );
       console.log(order);
     }
