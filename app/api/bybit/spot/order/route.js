@@ -110,6 +110,10 @@ export async function POST(req, res) {
         const { symbol, type, side, amount, price } = body;
         await exchange.createOrder(symbol, type, side, amount, price, options);
       }
+      return NextResponse.json(
+        { success: true, message: "orders created successfully" },
+        { status: 200 }
+      );
     } else {
       const user = await User.findOne({ username: body.user }).select(
         "-password"
@@ -121,45 +125,58 @@ export async function POST(req, res) {
         );
       // const apiKey = '80fNrSDmS1TJTZK7IA';
       // const secret = '1TBrzDsfe39yRaviJs2O2pJDEBFDyIZV8P3Y';
-      const params = {
-        category: "spot",
-        symbol: "BTCUSDT",
-        side: "Buy",
-        positionIdx: 0,
-        orderType: "Limit",
-        qty: "0.001",
-        price: "10000",
-        timeInForce: "GTC",
-      };
-      const order= await createByBitSpotOrder(params, user.byBitApiKey, user.byBitSecretKey);
-      // const apiKey = process.env.BYBIT_API_KEY;
-      // const secret = process.env.BYBIT_SECRET_KEY;
-      // const exchange = new ccxt.bybit({
-      //   apiKey,
-      //   secret,
-      //   enableRateLimit: true,
-      //   urls: {
-      //     api: {
-      //       public: "https://api-testnet.bybit.com",
-      //       private: "https://api-testnet.bybit.com",
-      //     },
-      //   },
-      // });
-      // const { symbol, type, side, quantity, price } = body;
-      // console.log(symbol, type, side, quantity, price);
-      // body.category = "spot";
-      // const order = await exchange.createOrder(
-      //   symbol,
-      //   type,
-      //   side,
-      //   quantity,
-      //   price,
-      //   { category: "spot" }
+      // const params = {
+      //   category: "spot",
+      //   symbol: "BTCUSDT",
+      //   side: "Buy",
+      //   positionIdx: 0,
+      //   orderType: "Limit",
+      //   qty: "0.001",
+      //   price: "10000",
+      //   timeInForce: "GTC",
+      // };
+      // const order = await createByBitSpotOrder(
+      //   params,
+      //   user.byBitApiKey,
+      //   user.byBitSecretKey
       // );
-      // const order = await exchange.createOrder(symbol, type, side, amount, price, {category:"spot"});
+      // if (order.error) {
+      //   return NextResponse.json(
+      //     { success: false, message: order.message },
+      //     { status: 400 }
+      //   );
+      // }
+      // return NextResponse.json(
+      //   { success: true, message: "order created successfully" },
+      //   { status: 200 }
+      // );
+      const apiKey = process.env.BYBIT_API_KEY;
+      const secret = process.env.BYBIT_SECRET_KEY;
+      const exchange = new ccxt.bybit({
+        apiKey,
+        secret,
+        enableRateLimit: true,
+        urls: {
+          api: {
+            public: "https://api-testnet.bybit.com",
+            private: "https://api-testnet.bybit.com",
+          },
+        },
+      });
+      const { symbol, type, side, quantity, price } = body;
+      console.log(symbol, type, side, quantity, price);
+      body.category = "spot";
+      const order = await exchange.createOrder(
+        symbol,
+        type,
+        side,
+        quantity,
+        price,
+        { category: "spot" }
+      );
     }
-    return NextResponse.json(
-      { success: true, message: "order created successfully" },
+     return NextResponse.json(
+      { success: true, message: "order created successfully",order },
       { status: 200 }
     );
   } catch (error) {

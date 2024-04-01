@@ -291,7 +291,7 @@ export const createByBitSpotOrder = async (params, api, secret) => {
     });
     // console.log(response)
     const data = await response.json();
-    console.log(data);
+    console.log(response);
     if (response.status === 200) {
       return { data, error: false };
     } else {
