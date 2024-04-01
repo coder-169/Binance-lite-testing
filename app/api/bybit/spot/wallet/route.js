@@ -47,6 +47,7 @@ export async function GET(req, res) {
                 'Content-Type': 'application/json; charset=utf-8'
             },
         })
+        console.log(resp)
         const data = await resp.json();
         console.log(data.result.balance)
         const assets = data.result.balance.filter(asset => asset.walletBalance > 0)
