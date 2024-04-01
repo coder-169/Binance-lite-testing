@@ -163,19 +163,46 @@ export async function POST(req, res) {
           },
         },
       });
-      const { symbol, type, side, quantity, price } = body;
-      console.log(symbol, type, side, quantity, price);
-      body.category = "spot";
-      const order = await exchange.createOrder(
+      const {
         symbol,
         type,
         side,
         quantity,
         price,
-        { category: "spot" }
+        stopLoss,
+        slLimitPrice,
+        takeProfit,
+      } = body;
+      console.log(body);
+      body.category = "spot";
+      let newType = "";
+      if (type === "stop_loss") {
+        if (slLimitPrice > 0) {
+          newType = "limit";
+        } else {
+          newType = "market";
+        }
+        const order = await exchange.createOrder(
+          symbol,
+          newType,
+          side,
+          quantity,
+          price,
+          { category: "spot", slLimitPrice, stopLoss, slOrderType: newType }
+        );
+        console.log(order);
+      }
+      const order = await exchange.createOrder(
+        symbol,
+        newType,
+        side,
+        quantity,
+        price,
+        { category: "spot", slLimitPrice, stopLoss }
       );
+      console.log(order);
     }
-     return NextResponse.json(
+    return NextResponse.json(
       { success: true, message: "order created successfully" },
       { status: 200 }
     );
