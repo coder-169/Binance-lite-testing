@@ -86,7 +86,7 @@ export async function POST(req, res) {
 
     const body = await req.json();
     const users = body.user;
-    const order = null;
+    let order = null;
     if (users === "All") {
       const userArray = await User.find({ byBitSubscribed: true }).select(
         "-password"
@@ -124,33 +124,6 @@ export async function POST(req, res) {
           { success: false, message: "user not found" },
           { status: 404 }
         );
-      // const apiKey = '80fNrSDmS1TJTZK7IA';
-      // const secret = '1TBrzDsfe39yRaviJs2O2pJDEBFDyIZV8P3Y';
-      // const params = {
-      //   category: "spot",
-      //   symbol: "BTCUSDT",
-      //   side: "Buy",
-      //   positionIdx: 0,
-      //   orderType: "Limit",
-      //   qty: "0.001",
-      //   price: "10000",
-      //   timeInForce: "GTC",
-      // };
-      // const order = await createByBitSpotOrder(
-      //   body,
-      //   user.byBitApiKey,
-      //   user.byBitSecretKey
-      // );
-      // if (order.error) {
-      //   return NextResponse.json(
-      //     { success: false, message: order.message },
-      //     { status: 400 }
-      //   );
-      // }
-      // return NextResponse.json(
-      //   { success: true, message: "order created successfully" },
-      //   { status: 200 }
-      // );
       const apiKey = process.env.BYBIT_API_KEY;
       const secret = process.env.BYBIT_SECRET_KEY;
       const exchange = new ccxt.bybit({
