@@ -324,37 +324,7 @@ export default function FullWidthTabs() {
       leverage: parseFloat(leverage),
     };
   };
-  //   try {
-  //     setLoading(true);
-  //     setOrder({
-  //       ...order,
-  //       [e.target.name]: e.target.value,
-  //     });
-  //     const value = e.target.value.toLowerCase();
-  //     console.log(value);
-  //     let url = "/api/";
-  //     if (value === "binance") url += `${value}/spot/tickers`;
-  //     if (value === "mexc") url += `${value}/spot/tickers`;
-  //     if (value === "kucoin") url += `${value}/spot/tickers`;
-  //     if (value === "bybit") url += `${value}/spot/tickers`;
-  //     const response = await fetch(url, {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     const data = await response.json();
-  //     console.log(data);
-  //     if (!data.success) {
-  //       toast.error(data.message);
-  //     }
-  //     setCoins(data.tickers);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //     setLoading(false);
-  //   }
-  // };
+
   const trs = ["spot", "future"];
 
   const makeOptions = (order) => {
@@ -458,8 +428,8 @@ export default function FullWidthTabs() {
       if (type === "stop_loss_limit" || type === "take_profit_limit") {
         return {
           symbol,
-          side,
-          type,
+          side:side.toUpperCase(),
+          type:type.toUpperCase(),
           timeInForce: "GTC",
           quantity: parseFloat(parseFloat(quantity).toFixed(3)),
           price: parseFloat(parseFloat(price)),

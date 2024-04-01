@@ -15,9 +15,7 @@ export async function GET(req, res) {
   try {
     await dbConnect();
     const headerList = headers();
-    // console.log(token)
     const token = headerList.get("token");
-    console.log(token);
     if (!token)
       return NextResponse.json(
         {
@@ -170,7 +168,6 @@ export async function GET(req, res) {
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       { success: false, message: error.message },
       { status: 500 }

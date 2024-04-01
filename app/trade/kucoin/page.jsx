@@ -213,8 +213,8 @@ export default function FullWidthTabs() {
       console.log(data);
       if (data.success) {
         if (data.subscribers.length > 0) {
-          const newArray = [...data.subscribers, { username: "All" }]
-          console.log(newArray)
+          const newArray = [...data.subscribers, { username: "All" }];
+          console.log(newArray);
           setUsers(newArray);
           setCoins(data.tickers);
           setFutureCoins(data.tickersFuture);
@@ -227,7 +227,7 @@ export default function FullWidthTabs() {
     }
     setLoading(false);
   };
- 
+
   const specialHandler = (e) => {
     if (order.price !== "") {
       if (e.target.name === "quantity")
@@ -271,7 +271,7 @@ export default function FullWidthTabs() {
       leverage: parseFloat(leverage),
     };
   };
- 
+
   //   try {
   //     setLoading(true);
   //     setOrder({
@@ -331,6 +331,7 @@ export default function FullWidthTabs() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          token: localStorage.getItem("auth-token"),
         },
         body: JSON.stringify(body),
       });
@@ -395,7 +396,7 @@ export default function FullWidthTabs() {
                 <Loader />
               ) : (
                 <div className="w-4/5 mx-auto mt-4">
-                  {(users?.length <= 0) ? (
+                  {users?.length <= 0 ? (
                     <div className="h-[50vh] flex items-center justify-center">
                       <h3 className="text-2xl text-gray-600 font-medium">
                         No Subscribers to Start trade
@@ -474,8 +475,9 @@ export default function FullWidthTabs() {
                                 className="!text-white w-3/5 !border-white"
                                 id="quantity"
                                 name="quantity"
-                                label={`Quantity(${order.symbol !== "" ? order.symbol : "Coin"
-                                  })`}
+                                label={`Quantity(${
+                                  order.symbol !== "" ? order.symbol : "Coin"
+                                })`}
                                 value={order.quantity}
                                 onChange={specialHandler}
                                 autoComplete="off"
@@ -548,46 +550,46 @@ export default function FullWidthTabs() {
                             )}
                             {(order.type === "stop_limit" ||
                               order.type === "stop_market") && (
-                                <div className="w-full mb-4 sm:mb-8">
-                                  <FormControl fullWidth>
-                                    <TextField
-                                      disabled={
-                                        order.symbol === "" ? true : false
-                                      }
-                                      className="!text-white text-center  !border-white"
-                                      id="stopPrice"
-                                      onChange={handleChange}
-                                      name="stopPrice"
-                                      label="Stop Price"
-                                      variant="outlined"
-                                      type="number"
-                                      value={order.stopPrice}
-                                      autoComplete="off"
-                                    />
-                                  </FormControl>
-                                </div>
-                              )}
+                              <div className="w-full mb-4 sm:mb-8">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    disabled={
+                                      order.symbol === "" ? true : false
+                                    }
+                                    className="!text-white text-center  !border-white"
+                                    id="stopPrice"
+                                    onChange={handleChange}
+                                    name="stopPrice"
+                                    label="Stop Price"
+                                    variant="outlined"
+                                    type="number"
+                                    value={order.stopPrice}
+                                    autoComplete="off"
+                                  />
+                                </FormControl>
+                              </div>
+                            )}
                             {(order.type === "stop_limit" ||
                               order.type === "limit") && (
-                                <div className="w-full mb-4 sm:mb-8">
-                                  <FormControl fullWidth>
-                                    <TextField
-                                      disabled={
-                                        order.symbol === "" ? true : false
-                                      }
-                                      className="!text-white text-center  !border-white"
-                                      id="price"
-                                      name="price"
-                                      label="Price"
-                                      variant="outlined"
-                                      onChange={handleChange}
-                                      type="number"
-                                      autoComplete="off"
-                                      value={order.price}
-                                    />
-                                  </FormControl>
-                                </div>
-                              )}
+                              <div className="w-full mb-4 sm:mb-8">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    disabled={
+                                      order.symbol === "" ? true : false
+                                    }
+                                    className="!text-white text-center  !border-white"
+                                    id="price"
+                                    name="price"
+                                    label="Price"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    type="number"
+                                    autoComplete="off"
+                                    value={order.price}
+                                  />
+                                </FormControl>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="sm:w-1/2 w-full flex  gap-8">
@@ -610,8 +612,9 @@ export default function FullWidthTabs() {
                               className="!text-white w-full !border-white"
                               id="quantity"
                               name="quantity"
-                              label={`Quantity(${order.symbol !== "" ? order.symbol : "Coin"
-                                })`}
+                              label={`Quantity(${
+                                order.symbol !== "" ? order.symbol : "Coin"
+                              })`}
                               value={order.quantity}
                               onChange={specialHandler}
                               autoComplete="off"
@@ -720,8 +723,9 @@ export default function FullWidthTabs() {
                                 className="!text-white w-3/5 !border-white"
                                 id="quantity"
                                 name="quantity"
-                                label={`Quantity(${order.symbol !== "" ? order.symbol : "Coin"
-                                  })`}
+                                label={`Quantity(${
+                                  order.symbol !== "" ? order.symbol : "Coin"
+                                })`}
                                 value={order.quantity}
                                 onChange={specialHandler}
                                 autoComplete="off"
@@ -806,25 +810,25 @@ export default function FullWidthTabs() {
                             )}
                             {(order.type === "stop_market" ||
                               order.type === "stop_limit") && (
-                                <div className="w-full mb-4 sm:mb-8">
-                                  <FormControl fullWidth>
-                                    <TextField
-                                      disabled={
-                                        order.symbol === "" ? true : false
-                                      }
-                                      className="!text-white text-center  !border-white"
-                                      id="stopPrice"
-                                      onChange={handleChange}
-                                      name="stopPrice"
-                                      label="Stop Price"
-                                      variant="outlined"
-                                      type="number"
-                                      value={order.stopPrice}
-                                      autoComplete="off"
-                                    />
-                                  </FormControl>
-                                </div>
-                              )}
+                              <div className="w-full mb-4 sm:mb-8">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    disabled={
+                                      order.symbol === "" ? true : false
+                                    }
+                                    className="!text-white text-center  !border-white"
+                                    id="stopPrice"
+                                    onChange={handleChange}
+                                    name="stopPrice"
+                                    label="Stop Price"
+                                    variant="outlined"
+                                    type="number"
+                                    value={order.stopPrice}
+                                    autoComplete="off"
+                                  />
+                                </FormControl>
+                              </div>
+                            )}
                             {/* {order.type === "TRAILING_STOP_MARKET" && (
                               <div className="w-full mb-4 sm:mb-8">
                                 <FormControl fullWidth>
@@ -847,25 +851,25 @@ export default function FullWidthTabs() {
                             )} */}
                             {(order.type === "limit" ||
                               order.type === "stop_limit") && (
-                                <div className="w-full mb-4 sm:mb-8">
-                                  <FormControl fullWidth>
-                                    <TextField
-                                      disabled={
-                                        order.symbol === "" ? true : false
-                                      }
-                                      className="!text-white text-center  !border-white"
-                                      id="price"
-                                      name="price"
-                                      label="Price"
-                                      variant="outlined"
-                                      onChange={handleChange}
-                                      type="number"
-                                      autoComplete="off"
-                                      value={order.price}
-                                    />
-                                  </FormControl>
-                                </div>
-                              )}
+                              <div className="w-full mb-4 sm:mb-8">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    disabled={
+                                      order.symbol === "" ? true : false
+                                    }
+                                    className="!text-white text-center  !border-white"
+                                    id="price"
+                                    name="price"
+                                    label="Price"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    type="number"
+                                    autoComplete="off"
+                                    value={order.price}
+                                  />
+                                </FormControl>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="sm:w-1/2 w-full flex gap-8">
@@ -888,8 +892,9 @@ export default function FullWidthTabs() {
                               className="!text-white w-full !border-white"
                               id="quantity"
                               name="quantity"
-                              label={`Quantity(${order.symbol !== "" ? order.symbol : "Coin"
-                                })`}
+                              label={`Quantity(${
+                                order.symbol !== "" ? order.symbol : "Coin"
+                              })`}
                               value={order.quantity}
                               onChange={specialHandler}
                               autoComplete="off"
