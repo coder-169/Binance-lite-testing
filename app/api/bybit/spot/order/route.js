@@ -188,6 +188,7 @@ export async function POST(req, res) {
         );
       }
     }
+    console.log(order)
     return NextResponse.json(
       { success: true, message: "order created successfully" },
       { status: 200 }
