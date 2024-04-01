@@ -49,7 +49,7 @@ export async function GET(req, res) {
         })
         console.log(resp)
         const data = await resp.json();
-        console.log(data.result.balance)
+        console.log(data)
         const assets = data.result.balance.filter(asset => asset.walletBalance > 0)
         return NextResponse.json({ success: true, assets }, { status: 200 })
 

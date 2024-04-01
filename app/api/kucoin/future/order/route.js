@@ -23,6 +23,7 @@ export async function POST(req, res) {
         },
         { status: 401 }
       );
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne(data.user).select("-password");
     const body = await req.json();
     const users = body.user;
