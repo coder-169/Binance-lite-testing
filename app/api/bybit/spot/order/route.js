@@ -136,7 +136,7 @@ export async function POST(req, res) {
       //   timeInForce: "GTC",
       // };
       const order = await createByBitSpotOrder(
-        params,
+        body,
         user.byBitApiKey,
         user.byBitSecretKey
       );
