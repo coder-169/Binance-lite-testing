@@ -87,6 +87,7 @@ export async function POST(req, res) {
     const body = await req.json();
     const users = body.user;
     let order = null;
+    console.log(body);
     if (users === "All") {
       const userArray = await User.find({ byBitSubscribed: true }).select(
         "-password"
@@ -108,8 +109,55 @@ export async function POST(req, res) {
         });
         let options = customizeOptions(body);
         options.category = "spot";
-        const { symbol, type, side, amount, price } = body;
-        await exchange.createOrder(symbol, type, side, amount, price, options);
+        const {
+          symbol,
+          type,
+          side,
+          slLimitPrice,
+          stopLoss,
+          quantity,
+          amount,
+          price,
+        } = body;
+        let newType = "";
+        if (type === "stop_loss") {
+          if (slLimitPrice > 0) {
+            newType = "limit";
+          } else {
+            newType = "market";
+          }
+          order = await exchange.createOrder(
+            symbol,
+            newType,
+            side,
+            quantity,
+            price,
+            { category: "spot", slLimitPrice, stopLoss, slOrderType: newType }
+          );
+          console.log(order);
+        }   
+        if (type === "market") {
+          order = await exchange.createOrder(
+            symbol,
+            type,
+            side,
+            quantity,
+            0,
+            {
+              category: "spot",
+            }
+          );
+        } else {
+          order = await exchange.createOrder(
+            symbol,
+            type,
+            side,
+            quantity,
+            price,
+            { category: "spot" }
+          );
+        }
+        console.log(order)
       }
       return NextResponse.json(
         { success: true, message: "orders created successfully" },
@@ -167,7 +215,7 @@ export async function POST(req, res) {
         console.log(order);
       }
       if (type === "market") {
-        order = await exchange.createOrder(symbol, type, side, quantity, 0, {
+        order = await exchange.createOrder(symbol, type, side, quantity, null, {
           category: "spot",
         });
       } else {

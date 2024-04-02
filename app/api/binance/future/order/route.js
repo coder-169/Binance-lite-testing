@@ -97,14 +97,14 @@ export async function POST(req, res) {
           side,
           quantity,
           price,
-          { stopPrice, leverage }
+          body
         );
+        console.log(ord)
       }
       return NextResponse.json(
         { success: true, message: "orders created successfully" },
         { status: 200 }
       );
-
     } else {
       const user = await User.findOne({ username: users }).select("-password");
       // const exfuture = new ccxt.binanceusdm({

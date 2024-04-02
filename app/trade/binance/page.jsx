@@ -110,6 +110,17 @@ function valuetext(value) {
 export default function FullWidthTabs() {
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+  const [order, setOrder] = useState({
+    symbol: "",
+    quantity: "",
+    type: "market",
+    quoteOrderQty: "",
+    side: "",
+    user: "",
+    stopPrice: "",
+    price: "",
+    leverage: 1,
+  });
   const handleValueChange = (event, newValue) => {
     setOrder({
       symbol: "",
@@ -130,17 +141,7 @@ export default function FullWidthTabs() {
   const handleChangeIndex = (index) => {
     setValue(index);
   };
-  const [order, setOrder] = useState({
-    symbol: "",
-    quantity: "",
-    type: "",
-    quoteOrderQty: "",
-    side: "",
-    user: "",
-    stopPrice: "",
-    price: "",
-    leverage: 1,
-  });
+
   const [users, setUsers] = useState([]);
   const handleChange = (e) => {
     if (
@@ -428,8 +429,8 @@ export default function FullWidthTabs() {
       if (type === "stop_loss_limit" || type === "take_profit_limit") {
         return {
           symbol,
-          side:side.toUpperCase(),
-          type:type.toUpperCase(),
+          side: side.toUpperCase(),
+          type: type.toUpperCase(),
           timeInForce: "GTC",
           quantity: parseFloat(parseFloat(quantity).toFixed(3)),
           price: parseFloat(parseFloat(price)),
@@ -578,6 +579,13 @@ export default function FullWidthTabs() {
                                     );
                                   })}
                                 </Select>
+                                {tickerPrice ? (
+                                  <small className="text-xs">
+                                    {tickerPrice}
+                                  </small>
+                                ) : (
+                                  ""
+                                )}
                               </FormControl>
                             </div>
                             <div className="w-full text-left hidden sm:block mb-4 sm:my-8">
@@ -829,6 +837,13 @@ export default function FullWidthTabs() {
                                     );
                                   })}
                                 </Select>
+                                {tickerPrice ? (
+                                  <small className="text-xs">
+                                    {tickerPrice}
+                                  </small>
+                                ) : (
+                                  ""
+                                )}
                               </FormControl>
                             </div>
                             <div className="w-full text-left hidden sm:block mb-2 sm:my-4">

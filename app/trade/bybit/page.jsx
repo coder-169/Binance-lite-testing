@@ -107,7 +107,7 @@ export default function FullWidthTabs() {
     setOrder({
       symbol: "",
       quantity: "",
-      type: "",
+      type: "market",
       quoteOrderQty: "",
       side: "",
       user: "",

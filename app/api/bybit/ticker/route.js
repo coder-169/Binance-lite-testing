@@ -31,7 +31,9 @@ export async function POST(req, res) {
         } else {
             // const resp = await exchange.publicGetV5MarketTickers();
             const resp = await exchange.publicGetDerivativesV3PublicTickers({ symbol: body.ticker, category: "linear" });
-            const tickerPrice = resp.result.list[0].last_price;
+            console.log(resp.result)
+            const tickerPrice = resp.result.list[0].lastPrice;
+
             return NextResponse.json({ success: true, tickerPrice, }, { status: 200 })
         }
 

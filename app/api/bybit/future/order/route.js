@@ -84,8 +84,10 @@ export async function POST(req, res) {
         { status: 401 }
       );
     const body = await req.json();
-    const user = await User.findOne(data.id).select("-password");
+    const data = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(data.id).select("-password");
     const users = body.user;
+    let order = null;
     if (users === "All") {
       const userArray = await User.find({ byBitSubscribed: true }).select(
         "-password"
@@ -124,10 +126,11 @@ export async function POST(req, res) {
           });
         } else if (type === "stop_loss") {
           const { stopLoss, slLimitPrice } = body;
-          await exchange.createOrder(symbol, "stop", side, quantity, price, {
+          await exchange.createOrder(symbol, "limit", side, quantity, price, {
             category: "linear",
             stopLoss,
             slLimitPrice,
+            slOrderType: "limit",
           });
         } else if (type === "take_profit") {
           const { takeProfit, tpLimitPrice } = body;
@@ -159,7 +162,7 @@ export async function POST(req, res) {
       });
       const { symbol, type, side, quantity, price } = body;
       // const options = customizeOptions(body)
-      let order = undefined;
+
       if (type === "limit") {
         order = await exchange.createOrder(
           symbol,
