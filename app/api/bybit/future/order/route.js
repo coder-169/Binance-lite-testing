@@ -1,5 +1,5 @@
 import dbConnect from "@/app/helpers/db";
-import { isAuthenticated } from "@/app/helpers/functions";
+import { createByBitFutureOrder, isAuthenticated } from "@/app/helpers/functions";
 import User from "@/app/models/User";
 import { Spot } from "@binance/connector";
 import jwt from "jsonwebtoken";
@@ -102,14 +102,15 @@ export async function POST(req, res) {
         const us = userArray[i];
         const apiKey = us.byBitApiKey;
         const secret = us.byBitSecretKey;
+        const sd = await createByBitFutureOrder(apiKey, secret);
         const exchange = new ccxt.bybit({
           apiKey,
           secret,
           enableRateLimit: true,
           urls: {
             api: {
-              public: 'https://api-testnet.bybit.com',
-              private: 'https://api-testnet.bybit.com',
+              public: "https://api-testnet.bybit.com",
+              private: "https://api-testnet.bybit.com",
             },
           },
         });
@@ -125,12 +126,32 @@ export async function POST(req, res) {
             category: "linear",
           });
         } else if (type === "stop_loss") {
-          const { stopLoss, slLimitPrice } = body;
-          await exchange.createOrder(symbol, "limit", side, quantity, price, {
+          const { stopLoss, slLimitPrice, leverage } = body;
+          
+          await exchange.createOrder(symbol, "limit", side, quantity, 0, {
             category: "linear",
             stopLoss,
-            slLimitPrice,
-            slOrderType: "limit",
+            takeProfit: slLimitPrice,
+            tpslMode: "Full",
+            leverage,
+            price: "66881.8",
+            basePrice: "66940",
+            action: "Open",
+            openOrderCreating: false,
+            tpInputType: "tpByPrice",
+            slInputType: "slByPrice",
+            tpOrderType: "Market",
+            slOrderType: "Market",
+            triggerBy: "LastPrice",
+            timeInForce: "GoodTillCancel",
+            tpTriggerBy: "LastPrice",
+            slTriggerBy: "LastPrice",
+            reduceOnly: false,
+            closeOnTrigger: false,
+            longValueNum: 33440.9,
+            shotValueNum: 33448.85,
+            positionIdx: 0,
+            basePrice: "66940",
           });
         } else if (type === "take_profit") {
           const { takeProfit, tpLimitPrice } = body;
@@ -155,8 +176,8 @@ export async function POST(req, res) {
         enableRateLimit: true,
         urls: {
           api: {
-            public: 'https://api-testnet.bybit.com',
-            private: 'https://api-testnet.bybit.com',
+            public: "https://api-testnet.bybit.com",
+            private: "https://api-testnet.bybit.com",
           },
         },
       });
@@ -204,6 +225,9 @@ export async function POST(req, res) {
     }
   } catch (error) {
     console.log(error.message);
-    return NextResponse.json({ success: false, error }, { status: 200 });
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
   }
 }

@@ -471,6 +471,7 @@ export default function FullWidthTabs() {
           stopPrice: "",
           price: "",
         });
+        setTickerPrice(0);
       } else {
         toast.error(data.message);
       }

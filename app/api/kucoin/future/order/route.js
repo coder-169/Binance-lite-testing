@@ -26,6 +26,7 @@ export async function POST(req, res) {
     const data = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne(data.user).select("-password");
     const body = await req.json();
+    let order = null;
     const users = body.user;
     if (users === "All") {
       const userArray = await User.find({ byBitSubscribed: true }).select(
@@ -36,19 +37,21 @@ export async function POST(req, res) {
           { success: false, message: "users not found" },
           { status: 404 }
         );
+        console.log(body)
       for (let i = 0; i < userArray.length; i++) {
         const us = userArray[i];
         const ex = new ccxt.kucoinfutures({
-          apiKey: user.kuCoinApiKey,
-          secret: user.kuCoinSecretKey,
-          password: user.kuCoinPassphrase,
+          apiKey: us.kuCoinApiKey,
+          secret: us.kuCoinSecretKey,
+          password: us.kuCoinPassphrase,
         });
         const { symbol, type, side, quantity, price } = body;
         let coin = symbol.split("-").join("/");
-        await ex.createOrder(coin, type, side, quantity, price, body);
+        order = await ex.createOrder(coin, type, side, quantity, price, body);
       }
+      console.log(order)
       return NextResponse.json(
-        { success: true, message: "order created successfully", order },
+        { success: true,order, message: "order created successfully" },
         { status: 200 }
       );
     } else {
@@ -86,7 +89,6 @@ export async function POST(req, res) {
     // const side = 'buy'
     // const type = 'limit'
   } catch (error) {
-    console.log(error);
     if (!error.response)
       return NextResponse.json(
         { success: false, message: error.message },

@@ -277,8 +277,10 @@ export default function FullWidthTabs() {
     console.log(order);
     e.preventDefault();
     const { quantity, quoteOrderQty, type, stopPrice, price, leverage } = order;
-    if (quantity === "" || price === "")
+    if (quantity === "" )
       return toast.error("please! fill all the fields");
+    if((type === "stop_limit" || type === 'limit' )&& price === '')
+    return toast.error("please! fill all the fields");
     if (
       (stopPrice === "" && type === "stop_limit") ||
       (stopPrice === "" && type === "stop_market")
@@ -317,6 +319,7 @@ export default function FullWidthTabs() {
           stopPrice: "",
           price: "",
         });
+        setTickerPrice(0)
       } else {
         toast.error(data.message);
       }
@@ -875,7 +878,7 @@ export default function FullWidthTabs() {
                         </div>
                         <div className="w-full sm:w-1/2 block sm:hidden mb-4 sm:my-8">
                           <Slider
-                            getAriaLabel={() => "Temperature range"}
+                            getAriaLabel={() => "Leverage"}
                             value={order.leverage}
                             onChange={handleChangeLeverage}
                             valueLabelDisplay="auto"

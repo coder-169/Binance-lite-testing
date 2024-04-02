@@ -259,7 +259,7 @@ export const createFutureOrder = async (params, api, secret) => {
     if (response.status === 200) {
       return { data, error: false };
     } else {
-      return { message: data.message, error: true };
+      return { message: data.msg || data.message, error: true };
     }
   } catch (error) {
     return { error: true, message: error.message };

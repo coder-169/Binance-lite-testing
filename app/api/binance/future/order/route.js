@@ -83,28 +83,44 @@ export async function POST(req, res) {
       const userArray = await User.find({ binanceSubscribed: true }).select(
         "-password"
       );
+      let errMessage = "";
+      let order = null
       for (let i = 0; i < userArray.length; i++) {
         let us = userArray[i];
-        const exfuture = new ccxt.binanceusdm({
-          apiKey: us.binanceApiKey,
-          secret: us.binanceSecretKey,
-        });
-        const { symbol, price, leverage, stopPrice, quantity, side, type } =
-          body;
-        const ord = await exfuture.createOrder(
-          symbol,
-          type,
-          side,
-          quantity,
-          price,
-          body
+        // const exfuture = new ccxt.binanceusdm({
+        //   apiKey: us.binanceApiKey,
+        //   secret: us.binanceSecretKey,
+        // });
+        // const { symbol, price, leverage, stopPrice, quantity, side, type } =
+        //   body;
+        // const ord = await exfuture.createOrder(
+        //   symbol,
+        //   type,
+        //   side,
+        //   quantity,
+        //   price,
+        //   body
+        // );
+        order = await createFutureOrder(
+          body,
+          us.binanceApiKey,
+          us.binanceSecretKey
         );
-        console.log(ord)
+        if (order.error) {
+          errMessage += us.username + "'s " + order.message + "\n";
+        }
       }
-      return NextResponse.json(
-        { success: true, message: "orders created successfully" },
-        { status: 200 }
-      );
+      if (order?.error) {
+        return NextResponse.json(
+          { success: false, message: errMessage },
+          { status: 400 }
+        );
+      } else {
+        return NextResponse.json(
+          { success: true, message: "orders created successfully" },
+          { status: 200 }
+        );
+      }
     } else {
       const user = await User.findOne({ username: users }).select("-password");
       // const exfuture = new ccxt.binanceusdm({
