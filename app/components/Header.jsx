@@ -29,12 +29,12 @@ const Header = () => {
       <div className="!z-50 lg:hidden absolute top-4 left-4">
         {!menu ? (
           <button onClick={() => setMenu(true)}>
-            <MenuRoundedIcon />{" "}
+            <MenuRoundedIcon  />{" "}
           </button>
         ) : (
           <button onClick={() => setMenu(false)}>
             {" "}
-            <HighlightOffRoundedIcon />
+            <HighlightOffRoundedIcon  />
           </button>
         )}
       </div>
