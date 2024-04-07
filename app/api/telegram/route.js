@@ -93,8 +93,8 @@ export async function POST(req, res) {
           adjustForTimeDifference: true,
         },
       });
-      const data = await ex.fetchBalance()
-      console.log(data)
+      const data = await ex.fetchBalance();
+      console.log(data);
       user.binanceApiKey = apiKey;
       user.binanceSecretKey = secretKey;
       user.binanceSubscribed = true;
@@ -114,43 +114,14 @@ export async function POST(req, res) {
 }
 export async function GET(req, res) {
   try {
-    const headerList = headers();
-    const token = headerList.get("token");
-    if (!token)
-      return NextResponse.json(
-        {
-          success: false,
-          message: "invalid authorization! please login again",
-        },
-        { status: 401 }
-      );
-    const data = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(data.id).select("-password");
-    if (!user)
-      return NextResponse.json(
-        { success: false, message: "user not found" },
-        { status: 404 }
-      );
-    const exchange = headerList.get("ex");
-    if (exchange === "kucoin") {
-      user.kuCoinApiKey = apiKey;
-      user.kuCoinSecretKey = secretKey;
-      user.kuCoinPassphrase = passphrase;
-      user.kuCoinSubscribed = true;
-    }
-    if (exchange === "bybit") {
-      user.byBitApiKey = apiKey;
-      user.byBitSecretKey = secretKey;
-      user.byBitSubscribed = true;
-    }
-    if (exchange === "binance") {
-      user.binanceApiKey = apiKey;
-      user.binanceSecretKey = secretKey;
-      user.binanceSubscribed = true;
-    }
-    await user.save();
+    const body = await req.json();
+    const { message } = body;
+    console.log(message);
+    // Do something with the message (e.g., call Binance API)
+    // Example: You can call a function to place an order using Binance API
+
     return NextResponse.json(
-      { success: true, message: "successfully unsubscribed", user },
+      { success: true, message: "triggered" },
       { status: 200 }
     );
   } catch (error) {

@@ -9,26 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@binance/connector": "^3.2.0",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.15.11",
-    "@mui/material": "^5.15.11",
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
-    "bybit-api": "^3.9.7",
-    "ccxt": "^4.2.70",
     "jsonwebtoken": "^9.0.2",
-    "kucoin-futures-node-sdk": "^2.0.3",
-    "kucoin-node-sdk": "^1.0.6",
-    "mongoose": "^8.2.1",
     "next": "^14.1.0",
-    "nodemailer": "^6.9.11",
+    "node-telegram-bot-api": "^0.63.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
-    "react-swipeable-views": "^0.14.0",
-    "react-toastify": "^10.0.4",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
